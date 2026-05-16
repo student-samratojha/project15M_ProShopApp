@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - ProShop Employee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .nav-text { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 via-slate-50 to-purple-50">
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-bold text-purple-600">ProShop</span>
+                </div>
+                <div class="flex items-center space-x-4 nav-text">
+                    <span class="text-gray-700 font-medium">Employee: <%= employee.name %></span>
+                    <a href="/secure/employee" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition">Dashboard</a>
+                    <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">My Assigned Bookings</h1>
+            <p class="text-gray-600 text-lg">Track and manage orders assigned to you</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <% 
+                let totalAssigned = bookings.length;
+                let pendingCount = bookings.filter(b => b.status === 'pending').length;
+                let inProgressCount = bookings.filter(b => b.status === 'in_progress' || b.status === 'confirmed').length;
+                let completedCount = bookings.filter(b => b.status === 'delivered').length;
+            %>
+            <div class="bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-800 text-sm font-semibold">Total Assigned</p>
+                        <p class="text-3xl font-bold text-purple-900"><%= totalAssigned %></p>
+                    </div>
+                    <svg class="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-800 text-sm font-semibold">Pending</p>
+                        <p class="text-3xl font-bold text-yellow-900"><%= pendingCount %></p>
+                    </div>
+                    <svg class="w-12 h-12 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-800 text-sm font-semibold">In Progress</p>
+                        <p class="text-3xl font-bold text-blue-900"><%= inProgressCount %></p>
+                    </div>
+                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-800 text-sm font-semibold">Completed</p>
+                        <p class="text-3xl font-bold text-green-900"><%= completedCount %></p>
+                    </div>
+                    <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="space-y-6">
+            <% if (bookings && bookings.length > 0) { %>
+                <% bookings.forEach(function(booking) { %>
+                    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
+                            <!-- Customer & Product Info -->
+                            <div class="md:col-span-2">
+                                <h3 class="text-lg font-bold text-gray-900 mb-2">
+                                    <%= booking.product ? booking.product.name : 'Unknown Product' %>
+                                </h3>
+                                <p class="text-sm text-gray-600 mb-3">
+                                    <strong>Customer:</strong> <%= booking.user ? booking.user.name : 'Unknown' %>
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    <strong>Phone:</strong> <%= booking.user && booking.user.phone ? booking.user.phone : 'N/A' %>
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    <strong>Email:</strong> <%= booking.user && booking.user.email ? booking.user.email : 'N/A' %>
+                                </p>
+                            </div>
+
+                            <!-- Order Details -->
+                            <div>
+                                <p class="text-sm text-gray-600 mb-2">Quantity</p>
+                                <p class="text-2xl font-bold text-purple-600"><%= booking.quantity %></p>
+                                <p class="text-sm text-gray-600 mt-2">Total Price</p>
+                                <p class="text-xl font-bold text-green-600">₹<%= booking.totalPrice %></p>
+                            </div>
+
+                            <!-- Delivery Info -->
+                            <div>
+                                <p class="text-sm text-gray-600 mb-2">Delivery Date</p>
+                                <p class="text-sm font-semibold text-gray-900"><%= booking.deliveryDate ? new Date(booking.deliveryDate).toLocaleDateString() : 'TBD' %></p>
+                                <p class="text-sm text-gray-600 mt-3 mb-2">Delivery Address</p>
+                                <p class="text-xs text-gray-700"><%= booking.deliveryAddress ? booking.deliveryAddress.substring(0, 50) + '...' : 'N/A' %></p>
+                            </div>
+
+                            <!-- Status & Actions -->
+                            <div>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-600 mb-2">Status</p>
+                                    <span class="<%= booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : booking.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : booking.status === 'in_progress' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800' %> px-3 py-1 rounded-full text-xs font-semibold block text-center">
+                                        <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
+                                    </span>
+                                </div>
+                                <form action="/booking/update" method="POST" class="space-y-2">
+                                    <input type="hidden" name="id" value="<%= booking._id %>">
+                                    <select name="status" class="w-full px-3 py-2 border-2 border-purple-200 rounded-lg text-sm focus:border-purple-400 bg-purple-50">
+                                        <option value="pending" <%= booking.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                        <option value="confirmed" <%= booking.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                        <option value="in_progress" <%= booking.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                                        <option value="delivered" <%= booking.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                                    </select>
+                                    <button type="submit" class="w-full px-3 py-2 bg-purple-500 text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm">
+                                        Update Status
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="bg-white rounded-2xl p-12 shadow-lg text-center">
+                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">No assigned bookings</h3>
+                    <p class="text-gray-600 mb-6">You don't have any bookings assigned yet. Check back soon!</p>
+                    <a href="/secure/employee" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Go to Dashboard
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

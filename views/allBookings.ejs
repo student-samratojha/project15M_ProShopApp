@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Bookings - ProShop Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .nav-text { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-slate-50 to-blue-50">
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-bold text-blue-600">ProShop</span>
+                </div>
+                <div class="flex items-center space-x-4 nav-text">
+                    <span class="text-gray-700 font-medium">Admin: <%= admin.name %></span>
+                    <a href="/secure/admin" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Dashboard</a>
+                    <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">All Bookings</h1>
+            <p class="text-gray-600 text-lg">Manage and oversee all customer bookings</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <% 
+                let totalBookings = bookings.length;
+                let pendingCount = bookings.filter(b => b.status === 'pending').length;
+                let confirmedCount = bookings.filter(b => b.status === 'confirmed').length;
+                let deliveredCount = bookings.filter(b => b.status === 'delivered').length;
+                let totalRevenue = bookings.reduce((sum, b) => sum + b.totalPrice, 0);
+            %>
+            <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-800 text-sm font-semibold">Total Bookings</p>
+                        <p class="text-3xl font-bold text-blue-900"><%= totalBookings %></p>
+                    </div>
+                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-800 text-sm font-semibold">Pending</p>
+                        <p class="text-3xl font-bold text-yellow-900"><%= pendingCount %></p>
+                    </div>
+                    <svg class="w-12 h-12 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-800 text-sm font-semibold">Confirmed</p>
+                        <p class="text-3xl font-bold text-green-900"><%= confirmedCount %></p>
+                    </div>
+                    <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-red-100 to-red-200 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-red-800 text-sm font-semibold">Total Revenue</p>
+                        <p class="text-3xl font-bold text-red-900">₹<%= totalRevenue.toLocaleString() %></p>
+                    </div>
+                    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gradient-to-r from-blue-100 to-blue-200">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Customer</th>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Product</th>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Quantity</th>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Total Price</th>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Status</th>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Assigned To</th>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <% if (bookings && bookings.length > 0) { %>
+                            <% bookings.forEach(function(booking) { %>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 text-sm text-gray-900 font-semibold"><%= booking.user ? booking.user.name : 'Unknown' %></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><%= booking.product ? booking.product.name : 'Unknown Product' %></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><%= booking.quantity %></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700 font-bold">₹<%= booking.totalPrice %></td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="<%= booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : booking.status === 'delivered' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800' %> px-3 py-1 rounded-full font-semibold text-xs">
+                                            <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><%= booking.assignedTo ? 'Assigned' : 'Unassigned' %></td>
+                                    <td class="px-6 py-4 text-sm space-x-2">
+                                        <button class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition" onclick="assignBooking('<%= booking._id %>')">Assign</button>
+                                        <button class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition">View</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                    <p class="text-lg font-semibold">No bookings found</p>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function assignBooking(bookingId) {
+            const employeeId = prompt("Enter Employee ID:");
+            if (employeeId) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/booking/assign';
+                form.innerHTML = `
+                    <input type="hidden" name="id" value="${bookingId}">
+                    <input type="hidden" name="employeeId" value="${employeeId}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Product - ProShop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-yellow-50 via-blue-50 to-yellow-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-bold text-blue-600">ProShop</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-700 font-medium">Welcome, <%= user.name %></span>
+                    <a href="/secure/employee" class="text-gray-700 hover:text-blue-600 font-semibold">Back</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 px-8 py-8">
+                <div class="flex items-center space-x-4 mb-3">
+                    <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-yellow-900">Create New Product</h1>
+                        <p class="text-yellow-800 mt-1">Add a new product to your inventory</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <form action="/products/create" method="POST" class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Name Field -->
+                        <div>
+                            <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Product Name *</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V11a2 2 0 012-2z"></path>
+                                </svg>
+                                <input type="text" id="name" name="name" placeholder="Product name..." required class="w-full pl-10 pr-4 py-2.5 border-2 border-yellow-100 rounded-lg focus:border-yellow-500 focus:outline-none transition bg-yellow-50">
+                            </div>
+                        </div>
+
+                        <!-- Slug Field -->
+                        <div>
+                            <label for="slug" class="block text-sm font-semibold text-gray-700 mb-2">Slug</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"></path>
+                                </svg>
+                                <input type="text" id="slug" name="slug" placeholder="product-slug" class="w-full pl-10 pr-4 py-2.5 border-2 border-blue-100 rounded-lg focus:border-blue-500 focus:outline-none transition bg-blue-50">
+                            </div>
+                        </div>
+
+                        <!-- Category Field -->
+                        <div>
+                            <label for="category" class="block text-sm font-semibold text-gray-700 mb-2">Select Category *</label>
+                            <select id="category" name="category" required class="w-full px-4 py-2.5 border-2 border-blue-100 rounded-lg focus:border-blue-500 focus:outline-none transition bg-blue-50">
+                                <option value="">-- Choose a Category --</option>
+                                <% category.forEach((cat) => { %>
+                                    <option value="<%= cat._id %>"><%= cat.title %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Price Field -->
+                        <div>
+                            <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">Price *</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <input type="number" id="price" name="price" placeholder="0.00" step="0.01" required class="w-full pl-10 pr-4 py-2.5 border-2 border-green-100 rounded-lg focus:border-green-500 focus:outline-none transition bg-green-50">
+                            </div>
+                        </div>
+
+                        <!-- Discount Price -->
+                        <div>
+                            <label for="discountPrice" class="block text-sm font-semibold text-gray-700 mb-2">Discount Price</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <input type="number" id="discountPrice" name="discountPrice" placeholder="0.00" step="0.01" class="w-full pl-10 pr-4 py-2.5 border-2 border-green-100 rounded-lg focus:border-green-500 focus:outline-none transition bg-green-50">
+                            </div>
+                        </div>
+
+                        <!-- Stock Field -->
+                        <div>
+                            <label for="stock" class="block text-sm font-semibold text-gray-700 mb-2">Stock Quantity</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                                <input type="number" id="stock" name="stock" placeholder="100" class="w-full pl-10 pr-4 py-2.5 border-2 border-red-100 rounded-lg focus:border-red-500 focus:outline-none transition bg-red-50">
+                            </div>
+                        </div>
+
+                        <!-- Images Field -->
+                        <div>
+                            <label for="images" class="block text-sm font-semibold text-gray-700 mb-2">Image URLs</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <input type="text" id="images" name="images" placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg" class="w-full pl-10 pr-4 py-2.5 border-2 border-blue-100 rounded-lg focus:border-blue-500 focus:outline-none transition bg-blue-50">
+                            </div>
+                        </div>
+
+                        <!-- Thumbnail Field -->
+                        <div>
+                            <label for="thumbnail" class="block text-sm font-semibold text-gray-700 mb-2">Thumbnail URL</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <input type="url" id="thumbnail" name="thumbnail" placeholder="https://example.com/thumbnail.jpg" class="w-full pl-10 pr-4 py-2.5 border-2 border-blue-100 rounded-lg focus:border-blue-500 focus:outline-none transition bg-blue-50">
+                            </div>
+                        </div>
+
+                        <!-- Status Field -->
+                        <div>
+                            <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                            <select id="status" name="status" class="w-full px-4 py-2.5 border-2 border-yellow-100 rounded-lg focus:border-yellow-500 focus:outline-none transition bg-yellow-50">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="out_of_stock">Out of Stock</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Description Field -->
+                        <div class="md:col-span-2">
+                            <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                            <textarea id="description" name="description" rows="4" placeholder="Describe your product in detail..." class="w-full px-4 py-2.5 border-2 border-yellow-100 rounded-lg focus:border-yellow-500 focus:outline-none transition bg-yellow-50 resize-none"></textarea>
+                        </div>
+
+                        <!-- Short Description Field -->
+                        <div class="md:col-span-2">
+                            <label for="shortDescription" class="block text-sm font-semibold text-gray-700 mb-2">Short Description</label>
+                            <textarea id="shortDescription" name="shortDescription" rows="3" placeholder="Short product summary..." class="w-full px-4 py-2.5 border-2 border-yellow-100 rounded-lg focus:border-yellow-500 focus:outline-none transition bg-yellow-50 resize-none"></textarea>
+                        </div>
+
+                        <!-- Brand Field -->
+                        <div>
+                            <label for="brand" class="block text-sm font-semibold text-gray-700 mb-2">Brand</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                <input type="text" id="brand" name="brand" placeholder="Brand name..." class="w-full pl-10 pr-4 py-2.5 border-2 border-green-100 rounded-lg focus:border-green-500 focus:outline-none transition bg-green-50">
+                            </div>
+                        </div>
+
+                        <!-- SKU Field -->
+                        <div>
+                            <label for="sku" class="block text-sm font-semibold text-gray-700 mb-2">SKU</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                </svg>
+                                <input type="text" id="sku" name="sku" placeholder="SKU-12345" class="w-full pl-10 pr-4 py-2.5 border-2 border-red-100 rounded-lg focus:border-red-500 focus:outline-none transition bg-red-50">
+                            </div>
+                        </div>
+
+                        <!-- Colors Field -->
+                        <div>
+                            <label for="colors" class="block text-sm font-semibold text-gray-700 mb-2">Colors</label>
+                            <input type="text" id="colors" name="colors" placeholder="Red, Blue, Black" class="w-full px-4 py-2.5 border-2 border-indigo-100 rounded-lg focus:border-indigo-500 focus:outline-none transition bg-indigo-50">
+                        </div>
+
+                        <!-- Sizes Field -->
+                        <div>
+                            <label for="sizes" class="block text-sm font-semibold text-gray-700 mb-2">Sizes</label>
+                            <input type="text" id="sizes" name="sizes" placeholder="S, M, L" class="w-full px-4 py-2.5 border-2 border-indigo-100 rounded-lg focus:border-indigo-500 focus:outline-none transition bg-indigo-50">
+                        </div>
+
+                        <!-- Tags Field -->
+                        <div>
+                            <label for="tags" class="block text-sm font-semibold text-gray-700 mb-2">Tags</label>
+                            <input type="text" id="tags" name="tags" placeholder="tag1, tag2, tag3" class="w-full px-4 py-2.5 border-2 border-indigo-100 rounded-lg focus:border-indigo-500 focus:outline-none transition bg-indigo-50">
+                        </div>
+
+                        <!-- Weight Field -->
+                        <div>
+                            <label for="weight" class="block text-sm font-semibold text-gray-700 mb-2">Weight (kg)</label>
+                            <input type="number" id="weight" name="weight" step="0.01" placeholder="0.00" class="w-full px-4 py-2.5 border-2 border-indigo-100 rounded-lg focus:border-indigo-500 focus:outline-none transition bg-indigo-50">
+                        </div>
+
+                        <!-- Shipping Charge Field -->
+                        <div>
+                            <label for="shippingCharge" class="block text-sm font-semibold text-gray-700 mb-2">Shipping Charge</label>
+                            <input type="number" id="shippingCharge" name="shippingCharge" step="0.01" placeholder="0.00" class="w-full px-4 py-2.5 border-2 border-indigo-100 rounded-lg focus:border-indigo-500 focus:outline-none transition bg-indigo-50">
+                        </div>
+
+                        <!-- Warranty Field -->
+                        <div>
+                            <label for="warranty" class="block text-sm font-semibold text-gray-700 mb-2">Warranty</label>
+                            <input type="text" id="warranty" name="warranty" placeholder="1 year manufacturer warranty" class="w-full px-4 py-2.5 border-2 border-indigo-100 rounded-lg focus:border-indigo-500 focus:outline-none transition bg-indigo-50">
+                        </div>
+
+                        <!-- Return Policy Field -->
+                        <div>
+                            <label for="returnPolicy" class="block text-sm font-semibold text-gray-700 mb-2">Return Policy</label>
+                            <input type="text" id="returnPolicy" name="returnPolicy" placeholder="30-day return policy" class="w-full px-4 py-2.5 border-2 border-indigo-100 rounded-lg focus:border-indigo-500 focus:outline-none transition bg-indigo-50">
+                        </div>
+
+                        <!-- Available Checkbox -->
+                        <div class="bg-blue-100 rounded-lg p-4">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" id="isAvailable" name="isAvailable" value="true" class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500" checked>
+                                <div>
+                                    <p class="text-sm font-semibold text-blue-900">Available</p>
+                                    <p class="text-xs text-blue-800">Product is available for purchase</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEO Section -->
+                <div class="mt-8 pt-8 border-t border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>SEO Settings</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Meta Title -->
+                        <div>
+                            <label for="metaTitle" class="block text-sm font-semibold text-gray-700 mb-2">Meta Title</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <input type="text" id="metaTitle" name="metaTitle" placeholder="Page title for search engines" class="w-full pl-10 pr-4 py-2.5 border-2 border-blue-100 rounded-lg focus:border-blue-500 focus:outline-none transition bg-blue-50">
+                            </div>
+                        </div>
+
+                        <!-- Meta Description -->
+                        <div>
+                            <label for="metaDescription" class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <input type="text" id="metaDescription" name="metaDescription" placeholder="Page description for search engines" class="w-full pl-10 pr-4 py-2.5 border-2 border-green-100 rounded-lg focus:border-green-500 focus:outline-none transition bg-green-50">
+                            </div>
+                        </div>
+
+                        <!-- Keywords -->
+                        <div class="lg:col-span-2">
+                            <label for="keywords" class="block text-sm font-semibold text-gray-700 mb-2">Keywords (comma separated)</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-3.5 w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                </svg>
+                                <input type="text" id="keywords" name="keywords" placeholder="product, keyword, tag..." class="w-full pl-10 pr-4 py-2.5 border-2 border-yellow-100 rounded-lg focus:border-yellow-500 focus:outline-none transition bg-yellow-50">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4 mt-10">
+                    <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-lg hover:shadow-lg transition transform hover:scale-105 flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Create Product</span>
+                    </button>
+                    <a href="/secure/employee" class="flex-1 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>Cancel</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

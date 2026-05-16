@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      color: #333;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      text-align: center;
+      padding: 40px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      max-width: 520px;
+    }
+    h1 {
+      font-size: 4rem;
+      margin: 0 0 10px;
+      color: #1e1e1e;
+    }
+    p {
+      font-size: 1.1rem;
+      margin: 0 0 24px;
+      color: #555;
+    }
+    a.button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.2s ease;
+    }
+    a.button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>404</h1>
+    <p><%= message || "The page you are looking for cannot be found." %></p>
+    <a class="button" href="/">Go back to Home</a>
+  </div>
+</body>
+</html>
