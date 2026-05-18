@@ -12,10 +12,7 @@ async function verifyToken(req, res, next) {
     const token = req.cookies?.accessToken;
 
     if (!token) {
-      return res.status(401).send({
-        success: false,
-        message: "Access token missing",
-      });
+      return res.redirect("/404");
     }
 
     // =========================
@@ -29,20 +26,14 @@ async function verifyToken(req, res, next) {
     const user = await userModel.findById(decoded.id).select("-password");
 
     if (!user) {
-      return res.status(401).send({
-        success: false,
-        message: "User not found",
-      });
+      return res.redirect("/404");
     }
 
     // =========================
     // ACCOUNT CHECK
     // =========================
     if (user.isDeleted || !user.isActive) {
-      return res.status(403).send({
-        success: false,
-        message: "Account inactive or deleted",
-      });
+      return res.redirect("/404");
     }
 
     // =========================
@@ -54,10 +45,7 @@ async function verifyToken(req, res, next) {
   } catch (error) {
     console.error("Verify Token Error:", error.message);
 
-    return res.status(401).send({
-      success: false,
-      message: "Invalid or expired token",
-    });
+    return res.redirect("/404");
   }
 }
 
@@ -71,30 +59,21 @@ function verifyRoles(...roles) {
       // USER CHECK
       // =========================
       if (!req.user) {
-        return res.status(401).send({
-          success: false,
-          message: "Unauthorized access",
-        });
+        return res.redirect("/404");
       }
 
       // =========================
       // ROLE CHECK
       // =========================
       if (!roles.includes(req.user.role)) {
-        return res.status(403).send({
-          success: false,
-          message: "Access denied",
-        });
+        return res.redirect("/404");
       }
 
       next();
     } catch (error) {
       console.error("Verify Role Error:", error.message);
 
-      return res.status(500).send({
-        success: false,
-        message: "Internal Server Error",
-      });
+      return res.redirect("/404");
     }
   };
 }

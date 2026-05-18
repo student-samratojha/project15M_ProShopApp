@@ -16,7 +16,7 @@ async function getMakeProduct(req, res) {
       );
       return res.redirect("/secure/employee?make_product=false");
     }
-    res.render("makeProduct", {
+    res.render("employee/makeProduct", {
       user: req.user,
       category: category,
     });
@@ -94,7 +94,11 @@ async function createProduct(req, res) {
       brand,
       sku,
       stock: stock || 0,
-      images: images ? images.split(",").map((url) => url.trim()) : image ? [image.trim()] : [],
+      images: images
+        ? images.split(",").map((url) => url.trim())
+        : image
+          ? [image.trim()]
+          : [],
       thumbnail,
       colors: colors ? colors.split(",").map((value) => value.trim()) : [],
       sizes: sizes ? sizes.split(",").map((value) => value.trim()) : [],
@@ -201,7 +205,8 @@ async function editProduct(req, res) {
       );
       return res.redirect("/secure/employee?edit_product=false");
     }
-    if (product.employee.toString() !== req.user._id.toString()) {
+    const category = await categoryModel.findOne({ employee: req.user._id });
+    if (product.category.toString() !== category._id.toString()) {
       await auditHelper.auditLog(
         req,
         res,
@@ -214,8 +219,7 @@ async function editProduct(req, res) {
         "/secure/employee?edit_product=false&error=Unauthorized access",
       );
     }
-    const category = await categoryModel.find({ employee: req.user._id });
-    res.render("editProduct", {
+    res.render("employee/editProduct", {
       user: req.user,
       product: product,
       category: category,
@@ -237,8 +241,6 @@ async function editProduct(req, res) {
 }
 async function updateProduct(req, res) {
   try {
-    const { id } = req.params;
-
     const {
       name,
       slug,
@@ -262,6 +264,7 @@ async function updateProduct(req, res) {
       isFeatured,
       isAvailable,
       status,
+      id,
       metaTitle,
       metaDescription,
     } = req.body;
@@ -433,17 +436,65 @@ async function updateProduct(req, res) {
 
 async function shopAtTop(req, res) {
   try {
-    const products = await productModel
-      .find({ isDeleted: false, status: "active" })
-      .sort({ createdAt: -1 });
-      const categories = await categoryModel.find({ isDeleted: false });
-    res.render("shop", { user: req.user, products, categories });
+    const { price = "all", stock, sort = "newest", category = "" } = req.query;
+    const query = { isDeleted: false, status: "active" };
+
+    if (category) {
+      query.category = category;
+    }
+
+    if (price && price !== "all") {
+      if (price === "0-500") {
+        query.price = { $gte: 0, $lte: 500 };
+      } else if (price === "500-1000") {
+        query.price = { $gte: 500, $lte: 1000 };
+      } else if (price === "1000-5000") {
+        query.price = { $gte: 1000, $lte: 5000 };
+      } else if (price === "5000+") {
+        query.price = { $gte: 5000 };
+      }
+    }
+
+    const stockFilters = Array.isArray(stock) ? stock : stock ? [stock] : [];
+    if (stockFilters.length > 0) {
+      const stockQuery = [];
+      if (stockFilters.includes("instock")) {
+        stockQuery.push({ stock: { $gt: 0 } });
+      }
+      if (stockFilters.includes("outofstock")) {
+        stockQuery.push({ stock: 0 });
+      }
+      if (stockQuery.length > 0) {
+        query.$or = stockQuery;
+      }
+    }
+
+    let sortOption = { createdAt: -1 };
+    if (sort === "price-low") {
+      sortOption = { price: 1 };
+    } else if (sort === "price-high") {
+      sortOption = { price: -1 };
+    }
+
+    const products = await productModel.find(query).sort(sortOption);
+    const categories = await categoryModel.find({ isDeleted: false });
+
+    res.render("shop", {
+      user: req.user,
+      products,
+      categories,
+      filters: {
+        price,
+        stock: stockFilters,
+        sort,
+        category,
+      },
+    });
   } catch (error) {
     console.error("Shop At Top Error:", error.message);
     res.redirect("/?error=Unable to load shop");
   }
 }
-
 
 async function employeeProductManage(req, res) {
   try {
@@ -451,7 +502,7 @@ async function employeeProductManage(req, res) {
     const category = await categoryModel.findOne({ employee: userId });
 
     const products = await productModel
-      .find({ category: category ? category._id : null})
+      .find({ category: category ? category._id : null,isDeleted: false })
       .populate("category");
     const employee = await userModel.findById(userId);
     if (products.length === 0) {
@@ -463,7 +514,7 @@ async function employeeProductManage(req, res) {
         false,
         "info",
       );
-      return res.render("employeeProducts", { products: [], employee });
+      return res.render("employee/employeeProducts", { products: [], employee });
     }
     auditHelper.auditLog(
       req,
@@ -473,19 +524,87 @@ async function employeeProductManage(req, res) {
       false,
       "info",
     );
-    res.render("employeeProducts", { products, employee });
+    res.render("employee/employeeProducts", { products, employee });
   } catch (error) {
     console.error("Error fetching employee products:", error);
     res.redirect("/secure/employee?error=Unable to fetch products");
   }
 }
+async function addToWishlist(req, res) {
+  try {
+    const { productId } = req.body;
+    const user = await userModel.findById(req.user._id);
+    const product = await productModel.findById(productId);
+    if (!user || !product) {
+      await auditHelper.auditLog(
+        req,
+        res,
+        "add_to_wishlist_failed",
+        "User or product not found",
+        false,
+        "warning",
+      );
+      return res.redirect("/products/all?add_to_wishlist=false");
+    }
+    if (user.wishlist.includes(productId)) {
+      user.wishlist.pull(productId);
+      await user.save();
+      await auditHelper.auditLog(
+        req,
+        res,
+        "add_to_wishlist_success",
+        "Product added to wishlist",
+        true,
+        "info",
+      );
+      return res.redirect("/products/all?add_to_wishlist=false");
+    }
+    user.wishlist.push(productId);
+    await user.save();
+    await auditHelper.auditLog(
+      req,
+      res,
+      "add_to_wishlist_success",
+      "Product added to wishlist",
+      true,
+      "info",
+    );
+    return res.redirect("/products/all?add_to_wishlist=true");
+  } catch (error) {
+    console.error("Add to Wishlist Error:", error.message);
+    res.redirect("/product/all?add_to_wishlist=false");
+  }
+}
+async function productDetails(req, res) {
+  try {
+    const product = await productModel.findById(req.params.id).populate("category");
+    if (!product) {
+      await auditHelper.auditLog(
+        req,
+        res,
+        "product_details_failed",
+        "Product not found",
+        false,
+        "warning",
+      );
+      return res.redirect("/products/all?product_details=false");
+    }
+    res.render("productDetails", { user: req.user || null, product });
+  } catch (error) {
+    console.error("Product Details Error:", error.message);
+    res.redirect("/products/all?product_details=false");
+  }
+}
+
 
 module.exports = {
   getMakeProduct,
   createProduct,
+  productDetails,
   shopAtTop,
+  addToWishlist,
   deleteProduct,
   editProduct,
   updateProduct,
-  employeeProductManage
+  employeeProductManage,
 };

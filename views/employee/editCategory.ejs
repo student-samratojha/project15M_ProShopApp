@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Category - <%= category.title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .nav-text { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 via-slate-50 to-green-50 min-h-screen">
+    <!-- Navigation (Individual Page Navbar) -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-bold text-green-600">ProShop Employee</span>
+                </div>
+                <div class="flex items-center space-x-4 nav-text">
+                    <span class="text-gray-700 font-medium">Welcome, <%= user.name %></span>
+                    <a href="/" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">Home</a>
+                    <a href="/bookings/employee/manage" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold hover:bg-orange-200 transition">Manage Bookings</a>
+                    <a href="/products/employee/manage" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Manage Products</a>
+                    <a href="/secure/edit" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Edit Profile</a>
+                    <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="mb-12">
+            <div class="rounded-2xl bg-gradient-to-r from-green-100 to-green-200 p-8 shadow-lg border border-green-200">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Edit Category</h1>
+                <p class="text-gray-600 text-lg">Update branding and details for: <span class="font-bold text-green-700"><%= category.title %></span></p>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-green-100 p-8">
+            <form action="/categories/update" method="POST" class="space-y-8">
+                <!-- Section: Core Settings -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-gray-900 border-b-2 border-green-100 pb-2 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        General Information
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Category Title</label>
+                            <input type="text" name="title" value="<%= category.title %>" required
+                                class="w-full px-4 py-3 border-2 border-green-50 rounded-xl focus:border-green-400 focus:outline-none bg-green-50 text-gray-900 font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Slug</label>
+                            <input type="text" name="slug" value="<%= category.slug %>"
+                                class="w-full px-4 py-3 border-2 border-green-50 rounded-xl focus:border-green-400 focus:outline-none bg-green-50 text-gray-900">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                        <textarea name="description" rows="3"
+                            class="w-full px-4 py-3 border-2 border-green-50 rounded-xl focus:border-green-400 focus:outline-none bg-green-50 text-gray-900"><%= category.description %></textarea>
+                    </div>
+                </div>
+
+                <!-- Section: Images -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-gray-900 border-b-2 border-green-100 pb-2 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Visual Branding
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Main Image URL</label>
+                            <input type="text" name="image" value="<%= category.image %>"
+                                class="w-full px-4 py-3 border-2 border-green-50 rounded-xl focus:border-green-400 focus:outline-none bg-green-50 text-gray-900">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Banner Image URL</label>
+                            <input type="text" name="bannerImage" value="<%= category.bannerImage %>"
+                                class="w-full px-4 py-3 border-2 border-green-50 rounded-xl focus:border-green-400 focus:outline-none bg-green-50 text-gray-900">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Optimization & Metadata -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-gray-900 border-b-2 border-green-100 pb-2 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        SEO & Metadata
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Title</label>
+                            <input type="text" name="metaTitle" value="<%= category.metaTitle %>"
+                                class="w-full px-4 py-3 border-2 border-green-50 rounded-xl focus:border-green-400 focus:outline-none bg-green-50 text-gray-900">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Keywords (Comma separated)</label>
+                            <input type="text" name="keywords" value="<%= category.keywords ? category.keywords.join(', ') : '' %>"
+                                class="w-full px-4 py-3 border-2 border-green-50 rounded-xl focus:border-green-400 focus:outline-none bg-green-50 text-gray-900">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
+                        <textarea name="metaDescription" rows="2"
+                            class="w-full px-4 py-3 border-2 border-green-50 rounded-xl focus:border-green-400 focus:outline-none bg-green-50 text-gray-900"><%= category.metaDescription %></textarea>
+                    </div>
+                </div>
+
+                <!-- Section: Configuration -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-gray-900 border-b-2 border-green-100 pb-2 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Status & Sorting
+                    </h3>
+                    <div class="bg-green-50 p-6 rounded-2xl border-2 border-green-100 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                        <div>
+                            <label class="block text-xs font-bold text-green-700 uppercase mb-2">Display Priority</label>
+                            <input type="number" name="sortOrder" value="<%= category.sortOrder %>"
+                                class="w-full px-4 py-2 border-2 border-white rounded-xl focus:outline-none bg-white font-bold text-gray-900">
+                        </div>
+                        <div class="flex items-center space-x-3 pt-4">
+                            <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                                <input type="checkbox" name="isFeatured" id="isFeatured" <%= category.isFeatured ? 'checked' : '' %> value="true"
+                                    class="w-5 h-5 rounded text-green-600 focus:ring-green-500">
+                            </div>
+                            <label for="isFeatured" class="text-sm font-bold text-gray-700 cursor-pointer">Featured Category</label>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-green-700 uppercase mb-2">Account Status</label>
+                            <select name="status" class="w-full px-4 py-2 border-2 border-white rounded-xl focus:outline-none bg-white font-bold text-gray-900">
+                                <option value="active" <%= category.status === 'active' ? 'selected' : '' %>>Active</option>
+                                <option value="inactive" <%= category.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button type="submit"
+                        class="flex-1 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold rounded-2xl hover:shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        Save Changes
+                    </button>
+                    <a href="/secure/employee"
+                        class="flex-1 py-4 bg-gray-200 text-gray-800 font-bold rounded-2xl hover:bg-gray-300 transition text-center flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Discard
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Form Status Handling Script -->
+    <script>
+        // Simple alert for unsaved changes (Optional)
+        let isDirty = false;
+        const form = document.querySelector('form');
+        form.addEventListener('change', () => isDirty = true);
+        form.addEventListener('submit', () => isDirty = false);
+
+        window.addEventListener('beforeunload', (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Keyword Auto-formatter (Optional)
+        const keywordsInput = document.querySelector('input[name="keywords"]');
+        keywordsInput.addEventListener('blur', function() {
+            this.value = this.value.split(',').map(kw => kw.trim()).filter(kw => kw !== "").join(', ');
+        });
+    </script>
+</body>
+</html>

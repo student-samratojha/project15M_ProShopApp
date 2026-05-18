@@ -27,8 +27,9 @@
                 <div class="flex items-center space-x-4 nav-text">
                     <span class="text-gray-700 font-medium">Welcome, <%= user.name %></span>
                     <a href="/" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">Home</a>
-                     <a href="/bookings/employee/manage" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold hover:bg-orange-200 transition">Manage Bookings</a>
-                     <a href="/products/employee/manage" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Manage Products</a>
+                    <a href="/bookings/employee/manage" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold hover:bg-orange-200 transition">Manage Bookings</a>
+                    <a href="/products/employee/manage" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Manage Products</a>
+                    <a href="/secure/edit" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Edit Profile</a>
                     <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
                 </div>
             </div>
@@ -38,9 +39,24 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 py-12">
         <!-- Header -->
-        <div class="mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Employee Dashboard</h1>
-            <p class="text-gray-600 text-lg">Manage your products and categories</p>
+        <div class="grid gap-6 mb-12 lg:grid-cols-[auto_1fr] items-center">
+            <div class="flex items-center gap-4 bg-white rounded-2xl shadow-lg p-6">
+                <div class="w-20 h-20 rounded-full overflow-hidden border-4 border-green-100 bg-white shadow-sm flex items-center justify-center text-3xl font-bold text-green-700 flex-shrink-0">
+                    <% if (user.avatar) { %>
+                        <img src="<%= user.avatar %>" alt="<%= user.name %> Avatar" class="w-full h-full object-cover" />
+                    <% } else { %>
+                        <span><%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %></span>
+                    <% } %>
+                </div>
+                <div class="min-w-0">
+                    <h2 class="text-2xl font-bold text-gray-900 truncate"><%= user.name %></h2>
+                    <p class="text-sm text-gray-500 mt-1 capitalize"><%= user.role %> dashboard</p>
+                </div>
+            </div>
+            <div class="rounded-2xl bg-gradient-to-r from-green-100 to-green-200 p-6 shadow-lg">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Employee Dashboard</h1>
+                <p class="text-gray-600 text-base">Manage your products and categories</p>
+            </div>
         </div>
 
         <!-- Action Buttons -->
@@ -178,19 +194,9 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 text-gray-700"><%= booking.deliveryDate ? new Date(booking.deliveryDate).toLocaleDateString() : 'N/A' %></td>
-                                        <td class="px-6 py-4">
-                                            <form action="/booking/update" method="POST" class="flex gap-2">
-                                                <input type="hidden" name="id" value="<%= booking._id %>">
-                                                <select name="status" class="px-2 py-1 border-2 border-purple-200 rounded text-xs bg-purple-50 focus:border-purple-400">
-                                                    <option value="pending" <%= booking.status === 'pending' ? 'selected' : '' %>>Pending</option>
-                                                    <option value="confirmed" <%= booking.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
-                                                    <option value="in_progress" <%= booking.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
-                                                    <option value="delivered" <%= booking.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                                                </select>
-                                                <button type="submit" class="px-3 py-1 bg-purple-500 text-white rounded text-xs font-semibold hover:bg-purple-600 transition">
-                                                    Update
-                                                </button>
-                                            </form>
+                                        <td class="px-6 py-4 text-blue-700">
+                    <a href="/bookings/employee/manage" class="text-blue-700  font-semibold transition">Manage Bookings</a>
+                                            
                                         </td>
                                     </tr>
                                 <% }); %>
@@ -233,7 +239,7 @@
                                         <% } %>
                                     </div>
                                     <div class="flex gap-2">
-                                        <a href="#" class="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold text-sm hover:bg-blue-200 transition text-center">Edit</a>
+                                        <a href="/categories/edit/<%= cat._id %>" class="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold text-sm hover:bg-blue-200 transition text-center">Edit</a>
                                         <a href="#" class="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg font-semibold text-sm hover:bg-red-200 transition text-center">Delete</a>
                                     </div>
                                 </div>
@@ -293,7 +299,7 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 space-x-2">
-                                            <a href="#" class="text-blue-600 hover:text-blue-700 font-semibold">Edit</a>
+                                            <a href="/products/edit/<%= product._id %>" class="text-blue-600 hover:text-blue-700 font-semibold">Edit</a>
                                             <a href="#" class="text-red-600 hover:text-red-700 font-semibold">Delete</a>
                                         </td>
                                     </tr>

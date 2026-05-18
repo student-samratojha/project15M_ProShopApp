@@ -26,7 +26,7 @@ router.get(
   productController.editProduct,
 );
 router.post(
-  "/edit/:id",
+  "/edit",
   verifyToken,
   verifyRoles("employee"),
   productController.updateProduct,
@@ -38,4 +38,11 @@ router.get(
   verifyRoles("employee"),
   productController.employeeProductManage,
 );
+router.post(
+  "/wishlist",
+  verifyToken,
+  verifyRoles("customer"),
+  productController.addToWishlist,
+);
+router.get("/:id", productController.productDetails);
 module.exports = router;

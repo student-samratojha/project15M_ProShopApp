@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title><%= product.name %> | ProShop</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    * {
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(
+        to bottom right,
+        #fef2f2,
+        #fefce8,
+        #eff6ff
+      );
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    .shadow-soft {
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+
+  <!-- NAVBAR -->
+
+  <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-yellow-100 shadow-sm">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-5 py-4">
+
+        <!-- LOGO -->
+
+        <div class="flex items-center gap-4">
+
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-r from-red-400 via-yellow-400 to-blue-400 flex items-center justify-center shadow-lg">
+
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+
+          </div>
+
+          <div>
+
+            <h1 class="text-3xl font-extrabold bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 bg-clip-text text-transparent">
+              ProShop
+            </h1>
+
+            <p class="text-sm text-gray-500">
+              Premium Products Store
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- NAV LINKS -->
+
+        <div class="flex flex-wrap justify-center gap-3">
+
+          <a href="/"
+            class="px-5 py-2 rounded-full bg-red-100 text-red-700 font-semibold hover:bg-red-200 transition">
+            Home
+          </a>
+
+          <a href="/products/all"
+            class="px-5 py-2 rounded-full bg-yellow-100 text-yellow-700 font-semibold hover:bg-yellow-200 transition">
+            Shop
+          </a>
+
+          <% if(user){ %>
+
+            <a href="/auth/logout"
+              class="px-5 py-2 rounded-full bg-red-100 text-red-700 font-semibold hover:bg-red-200 transition">
+              Logout
+            </a>
+
+          <% } else { %>
+
+            <a href="/auth/login"
+              class="px-5 py-2 rounded-full bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200 transition">
+              Login
+            </a>
+
+          <% } %>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+  <!-- HERO SECTION -->
+
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <div class="grid grid-cols-1 xl:grid-cols-[1.5fr_0.8fr] gap-8">
+
+      <!-- LEFT SIDE -->
+
+      <div class="space-y-8">
+
+        <!-- PRODUCT CARD -->
+
+        <div class="glass rounded-[35px] shadow-soft overflow-hidden border border-white">
+
+          <div class="grid lg:grid-cols-2 gap-8 p-6 sm:p-8">
+
+            <!-- IMAGE SECTION -->
+
+            <div>
+
+              <div class="rounded-[30px] overflow-hidden bg-gradient-to-br from-yellow-100 via-white to-blue-100 min-h-[420px] flex items-center justify-center">
+
+                <% if(product.thumbnail){ %>
+
+                  <img
+                    src="<%= product.thumbnail %>"
+                    alt="<%= product.name %>"
+                    class="w-full h-full object-contain hover:scale-105 transition duration-500"
+                  />
+
+                <% } else if(product.images && product.images.length > 0){ %>
+
+                  <img
+                    src="<%= product.images[0] %>"
+                    alt="<%= product.name %>"
+                    class="w-full h-full object-contain hover:scale-105 transition duration-500"
+                  />
+
+                <% } else { %>
+
+                  <div class="text-center text-gray-500 font-semibold">
+                    No Image Available
+                  </div>
+
+                <% } %>
+
+              </div>
+
+              <!-- GALLERY -->
+
+              <% if(product.images && product.images.length > 1){ %>
+
+                <div class="grid grid-cols-3 gap-3 mt-5">
+
+                  <% product.images.forEach((img)=>{ %>
+
+                    <div class="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
+
+                      <img
+                        src="<%= img %>"
+                        class="w-full h-24 object-cover hover:scale-110 transition duration-300"
+                      />
+
+                    </div>
+
+                  <% }) %>
+
+                </div>
+
+              <% } %>
+
+            </div>
+
+            <!-- PRODUCT DETAILS -->
+
+            <div class="flex flex-col justify-between gap-6">
+
+              <div>
+
+                <!-- STATUS -->
+
+                <div class="flex flex-wrap gap-3 mb-5">
+
+                  <span class="px-4 py-1 rounded-full bg-green-100 text-green-700 font-semibold text-sm">
+                    <%= product.status || 'ACTIVE' %>
+                  </span>
+
+                  <% if(product.stock === 0){ %>
+
+                    <span class="px-4 py-1 rounded-full bg-red-100 text-red-700 font-semibold text-sm">
+                      Out Of Stock
+                    </span>
+
+                  <% } %>
+
+                </div>
+
+                <!-- TITLE -->
+
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 leading-tight mb-5">
+                  <%= product.name %>
+                </h1>
+
+                <!-- DESCRIPTION -->
+
+                <p class="text-gray-600 leading-8 text-[15px]">
+                  <%= product.shortDescription || product.description || 'Premium quality product with amazing features.' %>
+                </p>
+
+              </div>
+
+              <!-- PRICE -->
+
+              <div class="bg-gradient-to-r from-red-100 via-yellow-50 to-blue-100 rounded-[28px] p-6 border border-yellow-200">
+
+                <p class="text-sm text-gray-500 mb-2">
+                  Product Price
+                </p>
+
+                <% if(product.discountPrice && product.discountPrice > 0){ %>
+
+                  <div class="flex items-center gap-4 flex-wrap">
+
+                    <h2 class="text-5xl font-extrabold text-red-500">
+                      ₹<%= product.discountPrice %>
+                    </h2>
+
+                    <p class="text-2xl line-through text-gray-400">
+                      ₹<%= product.price %>
+                    </p>
+
+                  </div>
+
+                  <span class="inline-block mt-4 px-4 py-1 rounded-full bg-green-100 text-green-700 text-sm font-semibold">
+
+                    SAVE
+                    <%= Math.round(((product.price - product.discountPrice) / product.price) * 100) %>%
+
+                  </span>
+
+                <% } else { %>
+
+                  <h2 class="text-5xl font-extrabold text-yellow-600">
+                    ₹<%= product.price %>
+                  </h2>
+
+                <% } %>
+
+              </div>
+
+              <!-- BUTTONS -->
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                <a
+                  href="/products/all"
+                  class="w-full py-4 rounded-2xl bg-yellow-100 text-yellow-700 font-semibold text-center hover:bg-yellow-200 transition shadow-sm"
+                >
+                  Back To Shop
+                </a>
+
+                <% if(product.stock > 0){ %>
+
+                  <a
+                    href="/bookings/make/<%= product._id %>"
+                    class="w-full py-4 rounded-2xl bg-gradient-to-r from-red-400 via-yellow-400 to-blue-400 text-white font-bold text-center hover:scale-[1.02] transition shadow-xl"
+                  >
+                    Book Now
+                  </a>
+
+                <% } else { %>
+
+                  <button
+                    disabled
+                    class="w-full py-4 rounded-2xl bg-gray-200 text-gray-500 font-bold"
+                  >
+                    Out Of Stock
+                  </button>
+
+                <% } %>
+
+              </div>
+
+              <!-- WISHLIST -->
+
+              <% if(user && user.role === 'customer'){ %>
+
+                <form action="/products/wishlist" method="POST">
+
+                  <input type="hidden" name="productId" value="<%= product._id %>">
+
+                  <button
+                    class="w-full py-4 rounded-2xl bg-pink-100 border border-pink-200 text-pink-700 font-semibold hover:bg-pink-200 transition"
+                  >
+                    Add To Wishlist ❤️
+                  </button>
+
+                </form>
+
+              <% } else { %>
+
+                <a
+                  href="/auth/login"
+                  class="block text-center py-4 rounded-2xl bg-blue-100 border border-blue-200 text-blue-700 font-semibold hover:bg-blue-200 transition"
+                >
+                  Login To Add Wishlist
+                </a>
+
+              <% } %>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- PRODUCT DETAILS -->
+
+        <div class="glass rounded-[35px] shadow-soft p-6 sm:p-8">
+
+          <h2 class="text-2xl font-bold text-gray-800 mb-5">
+            Product Details
+          </h2>
+
+          <p class="text-gray-600 leading-8 whitespace-pre-line">
+            <%= product.description || 'No description available.' %>
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE -->
+
+      <aside class="space-y-8">
+
+        <!-- SPECIFICATIONS -->
+
+        <div class="glass rounded-[35px] shadow-soft p-6 sm:p-8">
+
+          <h2 class="text-2xl font-bold text-gray-800 mb-5">
+            Specifications
+          </h2>
+
+          <div class="space-y-4">
+
+            <div class="flex justify-between items-center bg-yellow-50 rounded-2xl p-4">
+              <span class="text-gray-500">Category</span>
+              <span class="font-semibold text-gray-800">
+                <%= product.category ? product.category.title : 'N/A' %>
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center bg-red-50 rounded-2xl p-4">
+              <span class="text-gray-500">Brand</span>
+              <span class="font-semibold text-gray-800">
+                <%= product.brand || 'N/A' %>
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center bg-blue-50 rounded-2xl p-4">
+              <span class="text-gray-500">Stock</span>
+              <span class="font-semibold text-gray-800">
+                <%= product.stock %>
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center bg-green-50 rounded-2xl p-4">
+              <span class="text-gray-500">Shipping</span>
+              <span class="font-semibold text-gray-800">
+                ₹<%= product.shippingCharge || 0 %>
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center bg-yellow-50 rounded-2xl p-4">
+              <span class="text-gray-500">Warranty</span>
+              <span class="font-semibold text-gray-800">
+                <%= product.warranty || 'No Warranty' %>
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- TAGS -->
+
+        <div class="glass rounded-[35px] shadow-soft p-6 sm:p-8">
+
+          <h2 class="text-2xl font-bold text-gray-800 mb-5">
+            Tags
+          </h2>
+
+          <div class="flex flex-wrap gap-3">
+
+            <% if(product.tags && product.tags.length){ %>
+
+              <% product.tags.forEach((tag)=>{ %>
+
+                <span class="px-4 py-2 rounded-full bg-gradient-to-r from-red-100 via-yellow-100 to-blue-100 text-gray-700 font-medium border border-white shadow-sm">
+                  #<%= tag %>
+                </span>
+
+              <% }) %>
+
+            <% } else { %>
+
+              <p class="text-gray-500">
+                No Tags Available
+              </p>
+
+            <% } %>
+
+          </div>
+
+        </div>
+
+        <!-- SEO -->
+
+        <div class="glass rounded-[35px] shadow-soft p-6 sm:p-8">
+
+          <h2 class="text-2xl font-bold text-gray-800 mb-5">
+            SEO Info
+          </h2>
+
+          <div class="space-y-4">
+
+            <div class="bg-gray-50 rounded-2xl p-4">
+
+              <p class="font-semibold text-gray-800 mb-1">
+                Meta Title
+              </p>
+
+              <p class="text-gray-600 text-sm">
+                <%= product.metaTitle || 'Not Provided' %>
+              </p>
+
+            </div>
+
+            <div class="bg-gray-50 rounded-2xl p-4">
+
+              <p class="font-semibold text-gray-800 mb-1">
+                Meta Description
+              </p>
+
+              <p class="text-gray-600 text-sm">
+                <%= product.metaDescription || 'Not Provided' %>
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </section>
+
+</body>
+</html>

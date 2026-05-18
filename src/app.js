@@ -6,6 +6,7 @@ const secureRoutes = require("./routes/secure.routes");
 const categoryRoutes = require("./routes/category.routes");
 const productRoutes = require("./routes/product.routes");
 const bookingRoutes = require("./routes/booking.routes");
+const shipRoutes = require("./routes/ship.routes");
 const app = express();
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -19,6 +20,7 @@ app.use("/auth", authRoutes);
 app.use("/secure", secureRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/bookings", bookingRoutes);
+app.use("/ship", shipRoutes);
 app.use("/products", productRoutes);
 app.get("/", (req, res) => {
   res.render("index", { user: req.user || null });
@@ -27,12 +29,20 @@ app.get("/about", (req, res) => {
   res.render("about", { user: req.user || null });
 });
 app.get("/contact", (req, res) => {
-    res.render("contact", { user: req.user || null });
+  res.render("contact", { user: req.user || null });
+});
+app.get("/404", (req, res) => {
+  res.status(404).render("404", {
+    user: req.user || null,
+    message: req.query.message || "Page Not Found",
+  });
 });
 
 // 404 Not Found Middleware
 app.use((req, res, next) => {
-  res.status(404).render("404", { user: req.user || null, message: "Page Not Found" });
+  res
+    .status(404)
+    .render("404", { user: req.user || null, message: "Page Not Found" });
 });
 
 // Global Error Handling Middleware

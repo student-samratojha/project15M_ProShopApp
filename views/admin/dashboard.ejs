@@ -27,7 +27,9 @@
                 <div class="flex items-center space-x-4 nav-text">
                     <span class="text-gray-700 font-medium">Welcome, <%= admin.name %></span>
                     <a href="/" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Home</a>
-                     <a href="/secure/create" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold hover:bg-orange-200 transition">Add Employee</a>
+                    <a href="/secure/create" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold hover:bg-orange-200 transition">Add Employee</a>
+                    <a href="/bookings/all" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">All Bookings</a>
+                    <a href="/secure/edit" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 transition">Edit Profile</a>
                     <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
                 </div>
             </div>
@@ -37,9 +39,24 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 py-12">
         <!-- Header -->
-        <div class="mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-            <p class="text-gray-600 text-lg">Manage your entire system</p>
+        <div class="grid gap-6 mb-12 lg:grid-cols-[auto_1fr] items-center">
+            <div class="flex items-center gap-4 bg-white rounded-2xl shadow-lg p-6">
+                <div class="w-20 h-20 rounded-full overflow-hidden border-4 border-blue-100 bg-white shadow-sm flex items-center justify-center text-3xl font-bold text-blue-700 flex-shrink-0">
+                    <% if (admin.avatar) { %>
+                        <img src="<%= admin.avatar %>" alt="<%= admin.name %> Avatar" class="w-full h-full object-cover" />
+                    <% } else { %>
+                        <span><%= admin.name ? admin.name.charAt(0).toUpperCase() : 'A' %></span>
+                    <% } %>
+                </div>
+                <div class="min-w-0">
+                    <h2 class="text-2xl font-bold text-gray-900 truncate"><%= admin.name %></h2>
+                    <p class="text-sm text-gray-500 mt-1 capitalize">Admin dashboard</p>
+                </div>
+            </div>
+            <div class="rounded-2xl bg-gradient-to-r from-blue-100 to-blue-200 p-6 shadow-lg">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+                <p class="text-gray-600 text-base">Manage your entire system</p>
+            </div>
         </div>
 
         <!-- Stats Grid -->
@@ -123,8 +140,7 @@
                                 <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Email</th>
                                 <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Role</th>
                                 <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Status</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Phone</th>
-                            </tr>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Phone</th>                                    <th class="px-6 py-4 text-left text-sm font-bold text-blue-900">Action</th>                            </tr>
                         </thead>
                         <tbody>
                             <% users.forEach((user, index) => { %>
@@ -156,6 +172,23 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-gray-700"><%= user.phone || 'N/A' %></td>
+                                    <td class="px-6 py-4">
+                                        <% if (user._id.toString() !== admin._id.toString()) { %>
+                                            <% if (user.isActive) { %>
+                                                <form action="/secure/deactivate-account" method="POST" class="inline-block">
+                                                    <input type="hidden" name="id" value="<%= user._id %>">
+                                                    <button type="submit" class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold hover:bg-yellow-200 transition">Deactivate</button>
+                                                </form>
+                                            <% } else { %>
+                                                <form action="/secure/reactivate-account" method="POST" class="inline-block">
+                                                    <input type="hidden" name="id" value="<%= user._id %>">
+                                                    <button type="submit" class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold hover:bg-green-200 transition">Activate</button>
+                                                </form>
+                                            <% } %>
+                                        <% } else { %>
+                                            <span class="text-xs text-gray-500">Self</span>
+                                        <% } %>
+                                    </td>
                                 </tr>
                             <% }); %>
                         </tbody>
@@ -164,84 +197,268 @@
             </div>
         </div>
 
-        <!-- Bookings Section -->
-        <div class="mb-12">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                </svg>
-                <span>All Bookings</span>
-            </h2>
+     <!-- Bookings Section -->
+<div class="mb-12">
 
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="bg-gradient-to-r from-green-100 to-green-200">
-                                <th class="px-6 py-4 text-left text-sm font-bold text-green-900">Customer</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-green-900">Product</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-green-900">Quantity</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-green-900">Total Price</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-green-900">Status</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-green-900">Assigned To</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-green-900">Delivery Date</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-green-900">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% if (bookings && bookings.length > 0) { %>
-                                <% bookings.forEach((booking) => { %>
-                                    <tr class="border-b border-gray-200 hover:bg-green-50 transition">
-                                        <td class="px-6 py-4 font-semibold text-gray-900"><%= booking.user ? booking.user.name : 'Unknown' %></td>
-                                        <td class="px-6 py-4 text-gray-700"><%= booking.product ? booking.product.name : 'Unknown Product' %></td>
-                                        <td class="px-6 py-4 text-gray-700"><%= booking.quantity %></td>
-                                        <td class="px-6 py-4 text-gray-700 font-bold">₹<%= booking.totalPrice %></td>
-                                        <td class="px-6 py-4">
-                                            <span class="px-3 py-1 rounded-full text-xs font-bold 
-                                                <% if(booking.status === 'pending') { %>
-                                                    bg-yellow-100 text-yellow-700
-                                                <% } else if(booking.status === 'confirmed') { %>
-                                                    bg-green-100 text-green-700
-                                                <% } else if(booking.status === 'delivered') { %>
-                                                    bg-blue-100 text-blue-700
-                                                <% } else if(booking.status === 'cancelled') { %>
-                                                    bg-red-100 text-red-700
-                                                <% } %>
-                                            ">
-                                                <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-gray-700">
-                                            <% if (booking.assignedTo) { %>
-                                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
-                                                    Assigned
-                                                </span>
-                                            <% } else { %>
-                                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700">
-                                                    Unassigned
-                                                </span>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+
+        <svg class="w-6 h-6 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+            </path>
+
+        </svg>
+
+        <span>All Bookings</span>
+
+    </h2>
+
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full min-w-[1200px]">
+
+                <thead>
+
+                    <tr class="bg-gradient-to-r from-green-100 to-green-200">
+
+                        <th class="px-6 py-4 text-left text-sm font-bold text-green-900">
+                            Customer
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-sm font-bold text-green-900">
+                            Product
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-sm font-bold text-green-900">
+                            Quantity
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-sm font-bold text-green-900">
+                            Total Price
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-sm font-bold text-green-900">
+                            Status
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-sm font-bold text-green-900">
+                            Assigned Employee
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-sm font-bold text-green-900">
+                            Delivery Date
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-sm font-bold text-green-900">
+                            Assign Employee
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <% if (bookings && bookings.length > 0) { %>
+
+                        <% bookings.forEach((booking) => { %>
+
+                            <tr class="border-b border-gray-200 hover:bg-green-50 transition">
+
+                                <!-- Customer -->
+                                <td class="px-6 py-4">
+
+                                    <div>
+
+                                        <p class="font-bold text-gray-900">
+                                            <%= booking.user ? booking.user.name : 'Unknown' %>
+                                        </p>
+
+                                        <p class="text-sm text-gray-500">
+                                            <%= booking.user ? booking.user.email : '' %>
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+                                <!-- Product -->
+                                <td class="px-6 py-4">
+
+                                    <div>
+
+                                        <p class="font-semibold text-gray-900">
+                                            <%= booking.product ? booking.product.name : 'Unknown Product' %>
+                                        </p>
+
+                                       
+                                    </div>
+
+                                </td>
+
+                                <!-- Quantity -->
+                                <td class="px-6 py-4 font-semibold text-gray-700">
+                                    <%= booking.quantity %>
+                                </td>
+
+                                <!-- Total -->
+                                <td class="px-6 py-4">
+
+                                    <span class="text-lg font-bold text-green-700">
+                                        ₹<%= booking.totalPrice %>
+                                    </span>
+
+                                </td>
+
+                                <!-- Status -->
+                                <td class="px-6 py-4">
+
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold
+
+                                        <% if(booking.status === 'pending') { %>
+                                            bg-yellow-100 text-yellow-700
+                                        <% } else if(booking.status === 'confirmed') { %>
+                                            bg-green-100 text-green-700
+                                        <% } else if(booking.status === 'delivered') { %>
+                                            bg-blue-100 text-blue-700
+                                        <% } else if(booking.status === 'cancelled') { %>
+                                            bg-red-100 text-red-700
+                                        <% } %>
+
+                                    ">
+
+                                        <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
+
+                                    </span>
+
+                                </td>
+
+                                <!-- Assigned Employee -->
+                                <td class="px-6 py-4">
+
+                                    <% if (booking.assignedTo) { %>
+
+                                       
+                                            <p class="font-bold text-purple-700">
+                                               <%= booking.assignedTo.name %>
+                                            </p>
+
+                                        
+
+                                    <% } else { %>
+
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700">
+                                            Unassigned
+                                        </span>
+
+                                    <% } %>
+
+                                </td>
+
+                                <!-- Delivery Date -->
+                                <td class="px-6 py-4 text-gray-700 font-medium">
+
+                                    <%= booking.deliveryDate
+                                        ? new Date(booking.deliveryDate).toLocaleDateString()
+                                        : 'N/A' %>
+
+                                </td>
+
+                                <!-- Assign -->
+                                <td class="px-6 py-4">
+<%if(booking.assignedTo){%>
+<p class=' font-semibold text-green-700 '>Assigned</p>
+<%} else{%>
+                                    <form action="/bookings/assign" method="POST" class="space-y-3 gap-1 flex itmes-center">
+
+                                        <input type="hidden"
+                                            name="id"
+                                            value="<%= booking._id %>">
+
+                                        <!-- Employee List -->
+                                        <select
+                                            name="employeeId"
+                                            required
+                                            class="w-full px-4 py-1 border-2 border-blue-100 rounded-xl bg-blue-50 focus:outline-none focus:border-blue-400 text-sm">
+
+                                            <option value="">
+                                                Select
+                                            </option>
+
+                                            <% if (employees && employees.length > 0) { %>
+
+                                                <% employees.forEach((employee) => { %>
+
+                                                    <option
+                                                        value="<%= employee._id %>"
+
+                                                        <%= booking.assignedTo &&
+                                                            booking.assignedTo._id.toString() === employee._id.toString()
+                                                            ? 'selected'
+                                                            : '' %>
+                                                    >
+
+                                                        <%= employee.name %> -
+                                                        <%= employee.email %>
+
+                                                    </option>
+
+                                                <% }) %>
+
                                             <% } %>
-                                        </td>
-                                        <td class="px-6 py-4 text-gray-700"><%= booking.deliveryDate ? new Date(booking.deliveryDate).toLocaleDateString() : 'N/A' %></td>
-                                        <td class="px-6 py-4">
-                                            <button onclick="openAssignModal('<%= booking._id %>')" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:shadow-lg transition">
-                                                Assign
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <% }); %>
-                            <% } else { %>
-                                <tr>
-                                    <td colspan="8" class="px-6 py-8 text-center text-gray-500">
-                                        <p class="text-lg font-semibold">No bookings found</p>
-                                    </td>
-                                </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+                                        </select>
+
+                                        <!-- Assign Button -->
+                                        <button type="submit"
+                                            class="w-full px-4 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl hover:shadow-lg transition">
+
+                                            Assign
+
+                                        </button>
+
+                                    </form>
+<%}%>
+                                </td>
+
+                            </tr>
+
+                        <% }); %>
+
+                    <% } else { %>
+
+                        <tr>
+
+                            <td colspan="8"
+                                class="px-6 py-8 text-center text-gray-500">
+
+                                <p class="text-lg font-semibold">
+                                    No bookings found
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+                    <% } %>
+
+                </tbody>
+
+            </table>
+
         </div>
+
+    </div>
+
+</div>
 
         <!-- Recent Activities Section -->
         <div>

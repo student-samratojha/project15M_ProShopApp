@@ -17,7 +17,7 @@ async function getMakeCategory(req, res) {
         "/secure/employee?error=You already have a category associated with your account",
       );
     }
-    res.render("makeCategory", {
+    res.render("employee/makeCategory", {
       user: req.user,
     });
   } catch (error) {
@@ -199,6 +199,7 @@ async function deleteCategory(req, res) {
 async function editCategory(req, res) {
   try {
     const { id } = req.params;
+    const user = await userModel.findById(req.user._id);
     const category = await categoryModel.findById(id);
     if (!category) {
       await auditLog(
@@ -224,8 +225,8 @@ async function editCategory(req, res) {
         "/secure/employee?error=You are not authorized to edit this category",
       );
     }
-    res.render("editCategory", {
-      category,
+    res.render("employee/editCategory", {
+      category,user
     });
   } catch (error) {
     console.error("Edit Category Error:", error.message);
@@ -244,7 +245,6 @@ async function editCategory(req, res) {
 
 async function updateCategory(req, res) {
   try {
-    const { id } = req.params;
 
     const {
       title,
@@ -263,7 +263,7 @@ async function updateCategory(req, res) {
     // =========================
     // FIND CATEGORY
     // =========================
-    const category = await categoryModel.findById(id);
+    const category = await categoryModel.findOne({employee: req.user._id});
 
     if (!category) {
       await auditLog(

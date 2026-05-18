@@ -1,5 +1,6 @@
 const userModel = require("../db/models/user.model");
 const auditHelper = require("../helper/audit.helper");
+const { auditLog } = auditHelper;
 const categoryModel = require("../db/models/category.model");
 const productModel = require("../db/models/product.model");
 const bookingModel = require("../db/models/booking.model");
@@ -8,8 +9,13 @@ async function adminDashboard(req, res) {
   try {
     const users = await userModel.find().select("-password");
     const audits = await auditHelper.getAuditLogs(10);
-    const bookings = await bookingModel.find().populate("user").populate("product");
-    const employees = await userModel.find({ role: "employee" }).select("-password");
+    const bookings = await bookingModel
+      .find()
+      .populate("user")
+      .populate("product").populate("assignedTo");
+    const employees = await userModel
+      .find({ role: "employee" })
+      .select("-password");
     const admin = await userModel
       .findOne({ role: "admin" })
       .select("-password");
@@ -30,9 +36,14 @@ async function employeeDashboard(req, res) {
   try {
     const user = await userModel.findById(req.user._id).select("-password");
     const category = await categoryModel.find({ employee: req.user._id });
-    const categoryIds = category.map(cat => cat._id);
-    const products = await productModel.find({ category: { $in: categoryIds } }).populate("category");
-    const bookings = await bookingModel.find({ assignedTo: req.user._id }).populate("user").populate("product");
+    const categoryIds = category.map((cat) => cat._id);
+    const products = await productModel
+      .find({ category: { $in: categoryIds }, isDeleted: false })
+      .populate("category");
+    const bookings = await bookingModel
+      .find({ assignedTo: req.user._id })
+      .populate("user")
+      .populate("product");
     res.render("employee/dashboard", {
       user,
       category,
@@ -48,8 +59,10 @@ async function employeeDashboard(req, res) {
 async function customerDashboard(req, res) {
   try {
     const user = await userModel.findById(req.user._id).select("-password");
+    const bookings = await bookingModel
+      .find({ user: req.user._id });
     res.render("customer/dashboard", {
-      user,
+      user,bookings
     });
   } catch (error) {
     console.error("Customer Dashboard Error:", error.message);
@@ -84,7 +97,7 @@ async function deactivateAccount(req, res) {
     // DEACTIVATE ACCOUNT
     // =========================
     const { id } = req.body;
-    const user = await userModel.findByI(id);
+    const user = await userModel.findById(id);
     if (!user) {
       await auditHelper.auditLog(
         req,
@@ -140,7 +153,7 @@ async function reactivateAccount(req, res) {
       );
       return res.redirect("/secure/admin?reactivated=false");
     }
-    await user.findByIdAndUpdate(id, {
+    await userModel.findByIdAndUpdate(id, {
       isActive: true,
     });
     await auditHelper.auditLog(
@@ -173,10 +186,9 @@ async function editProfile(req, res) {
     const user = await userModel.findById(req.user._id).select("-password");
 
     if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: "User not found",
-      });
+      return res.redirect(
+        `/secure/${req.user.role}?Error_During_Update-UserData_Not_Found`,
+      );
     }
 
     // =========================
@@ -188,11 +200,7 @@ async function editProfile(req, res) {
     });
   } catch (error) {
     console.error("Edit Profile Error:", error.message);
-
-    return res.status(500).send({
-      success: false,
-      message: "Internal Server Error",
-    });
+    return res.redirect(`/secure/${req.user.role}?Error_During_Update`);
   }
 }
 
@@ -323,7 +331,7 @@ async function updateProfile(req, res) {
 
 async function createEmployee(req, res) {
   try {
-    res.render("createEmployee");
+    res.render("admin/createEmployee");
   } catch (error) {
     console.error("Create Employee Error:", error.message);
     res.redirect("/secure/admin?employee_created=false");
@@ -391,13 +399,12 @@ async function createEmployeePost(req, res) {
 async function manageAddress(req, res) {
   try {
     const user = await userModel.findById(req.user._id).select("-password");
-    res.render("manage-address", {
+    res.render("customer/manage-address", {
       user,
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Manage Address Error:", error.message);
-    res.status(500).send("Server Error");
+    res.redirect("/secure/manage?error=true");
   }
 }
 
@@ -414,9 +421,9 @@ async function addAddress(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/manage-address?added=false");
+      return res.redirect("/secure/manage?added=false");
     }
-    if(user.addresses.length >= 5) {
+    if (user.addresses.length >= 5) {
       await auditLog(
         req,
         res,
@@ -425,7 +432,18 @@ async function addAddress(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/manage-address?added=false&error=max_addresses");
+      return res.redirect("/secure/manage?added=false&error=max_addresses");
+    }
+    if (user.addresses.includes(address)) {
+      await auditLog(
+        req,
+        res,
+        "Add Address Failed",
+        `User with ID ${req.user._id} already has this address`,
+        false,
+        "warning",
+      );
+      return res.redirect("/secure/manage?added=false&error=duplicate_address");
     }
     await userModel.findByIdAndUpdate(req.user._id, {
       $push: { addresses: address },
@@ -438,11 +456,57 @@ async function addAddress(req, res) {
       true,
       "info",
     );
-    res.redirect("/secure/manage-address?added=true");
-
+    res.redirect("/secure/manage?added=true");
   } catch (error) {
     console.error("Add Address Error:", error.message);
-    res.status(500).send("Server Error");
+    res.redirect("/secure/manage?added=false&error=server_error");
+  }
+}
+async function deleteAddress(req, res) {
+  try {
+    const { addressId, address } = req.body;
+    const user = await userModel.findById(req.user._id);
+    if (!user) {
+      await auditLog(
+        req,
+        res,
+        "Delete Address Failed",
+        `User with ID ${req.user._id} not found`,
+        false,
+        "warning",
+      );
+      return res.redirect("/secure/manage?deleted=false");
+    }
+
+    const pullQuery = addressId ? { _id: addressId } : address ? address : null;
+
+    if (!pullQuery) {
+      await auditLog(
+        req,
+        res,
+        "Delete Address Failed",
+        "No address identifier provided",
+        false,
+        "warning",
+      );
+      return res.redirect("/secure/manage?deleted=false&error=invalid_request");
+    }
+
+    await userModel.findByIdAndUpdate(req.user._id, {
+      $pull: { addresses: pullQuery },
+    });
+    await auditLog(
+      req,
+      res,
+      "Address Deleted",
+      `Address deleted for user ${user.email}`,
+      true,
+      "info",
+    );
+    res.redirect("/secure/manage?deleted=true");
+  } catch (error) {
+    console.error("Delete Address Error:", error.message);
+    res.redirect("/secure/manage?deleted=false&error=server_error");
   }
 }
 
@@ -450,6 +514,7 @@ module.exports = {
   adminDashboard,
   employeeDashboard,
   customerDashboard,
+  deleteAddress,
   deleteAccount,
   manageAddress,
   addAddress,

@@ -160,10 +160,24 @@
         <div
           class="lg:col-span-2 bg-white rounded-2xl shadow-lg overflow-hidden"
         >
-          <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 px-8 py-8">
-            <h2 class="text-2xl font-bold text-yellow-900">
-              Profile Information
-            </h2>
+          <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 px-8 py-8 flex items-center gap-6">
+            <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white flex items-center justify-center text-3xl font-bold text-yellow-700">
+              <% if (user.avatar) { %>
+                <img
+                  src="<%= user.avatar %>"
+                  alt="<%= user.name %> Avatar"
+                  class="w-full h-full object-cover"
+                />
+              <% } else { %>
+                <span><%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %></span>
+              <% } %>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-yellow-900">
+                Profile Information
+              </h2>
+              <p class="text-yellow-800 mt-1">Welcome back, <%= user.name %></p>
+            </div>
           </div>
           <div class="p-8 space-y-6">
             <!-- Name -->
@@ -324,8 +338,8 @@
                 </svg>
               </div>
             </div>
-            <p class="text-2xl font-bold text-red-900">0</p>
-            <p class="text-red-800 text-sm mt-2">Start shopping today</p>
+           <p class="text-2xl font-bold text-red-900"><%= bookings.length %></p>
+<p class="text-red-800 text-sm mt-2">Total active bookings available</p>
           </div>
         </div>
       </div>

@@ -19,9 +19,9 @@ router.get(
   makeBooking,
 );
 router.post("/create", verifyToken, verifyRoles("customer"), createBooking);
-router.post("/update/:id", verifyToken, verifyRoles("employee"), updateBooking);
-router.get("/all", verifyToken, verifyRoles("employee"), viewAllBookings);
-router.post("/assign/:id", verifyToken, verifyRoles("admin"), assignBooking);
+router.post("/update", verifyToken, verifyRoles("employee"), updateBooking);
+router.get("/all", verifyToken, verifyRoles("admin"), viewAllBookings);
+router.post("/assign", verifyToken, verifyRoles("admin"), assignBooking);
 router.get(
   "/employee/manage",
   verifyToken,

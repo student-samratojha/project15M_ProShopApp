@@ -64,4 +64,10 @@ router.post(
   verifyRoles("customer"),
   secureController.addAddress,
 );
+router.post(
+  "/address/delete",
+  verifyToken,
+  verifyRoles("customer"),
+  secureController.deleteAddress,
+);
 module.exports = router;

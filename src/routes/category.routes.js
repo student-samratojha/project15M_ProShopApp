@@ -20,7 +20,7 @@ router.get(
   categoryController.editCategory,
 );
 router.post(
-  "/edit/:id",
+  "/edit",
   verifyToken,
   verifyRoles("employee"),
   categoryController.updateCategory,

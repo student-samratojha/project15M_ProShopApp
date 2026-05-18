@@ -49,66 +49,76 @@
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <!-- Sidebar Filters -->
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-2xl p-6 shadow-lg sticky top-20">
-                    <h2 class="text-xl font-bold text-yellow-900 mb-6">Filters</h2>
-
-                    <!-- Price Filter -->
-                    <div class="mb-8 pb-6 border-b border-gray-200">
-                        <h3 class="font-bold text-gray-900 mb-4">Price Range</h3>
-                        <div class="space-y-2">
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="all" checked class="mr-2">
-                                <span class="text-gray-700">All Prices</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="0-500" class="mr-2">
-                                <span class="text-gray-700">₹0 - ₹500</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="500-1000" class="mr-2">
-                                <span class="text-gray-700">₹500 - ₹1000</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="1000-5000" class="mr-2">
-                                <span class="text-gray-700">₹1000 - ₹5000</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="5000+" class="mr-2">
-                                <span class="text-gray-700">₹5000+</span>
-                            </label>
-                        </div>
+                <form action="/products/all" method="GET" class="bg-white rounded-2xl p-6 shadow-lg lg:sticky lg:top-20">
+                    <div class="mb-6">
+                        <h3 class="font-bold text-gray-900 mb-4">Filter Products</h3>
+                        <p class="text-sm text-gray-500">Use one or more filters to narrow results.</p>
                     </div>
 
-                    <!-- Stock Filter -->
-                    <div class="mb-8 pb-6 border-b border-gray-200">
-                        <h3 class="font-bold text-gray-900 mb-4">Availability</h3>
-                        <div class="space-y-2">
-                            <label class="flex items-center">
-                                <input type="checkbox" class="mr-2 stock-filter" value="instock">
-                                <span class="text-gray-700">In Stock</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="mr-2 stock-filter" value="outofstock">
-                                <span class="text-gray-700">Out of Stock</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Sort -->
-                    <div>
-                        <h3 class="font-bold text-gray-900 mb-4">Sort By</h3>
-                        <select id="sortBy" class="w-full px-4 py-2 border-2 border-yellow-100 rounded-lg focus:border-yellow-400 bg-yellow-50">
-                            <option value="newest">Newest</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
+                    <div class="mb-6 pb-4 border-b border-gray-200">
+                        <h4 class="font-semibold text-gray-900 mb-3">Category</h4>
+                        <select name="category" class="w-full rounded-xl border border-gray-200 px-4 py-3 bg-gray-50 text-sm text-gray-700">
+                            <option value="">All categories</option>
+                            <% if (categories) { %>
+                                <% categories.forEach(function(cat) { %>
+                                    <option value="<%= cat._id %>" <%= filters && filters.category === String(cat._id) ? 'selected' : '' %>><%= cat.title%></option>
+                                <% }); %>
+                            <% } %>
                         </select>
                     </div>
 
-                    <!-- Reset Button -->
-                    <button class="w-full mt-6 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-lg hover:shadow-lg transition">
-                        Reset Filters
-                    </button>
-                </div>
+                    <div class="mb-6 pb-4 border-b border-gray-200">
+                        <h4 class="font-semibold text-gray-900 mb-3">Price Range</h4>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="price" value="all" class="h-4 w-4" <%= !filters || filters.price === 'all' ? 'checked' : '' %>>
+                                All Prices
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="price" value="0-500" class="h-4 w-4" <%= filters && filters.price === '0-500' ? 'checked' : '' %>>
+                                ₹0 - ₹500
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="price" value="500-1000" class="h-4 w-4" <%= filters && filters.price === '500-1000' ? 'checked' : '' %>>
+                                ₹500 - ₹1000
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="price" value="1000-5000" class="h-4 w-4" <%= filters && filters.price === '1000-5000' ? 'checked' : '' %>>
+                                ₹1000 - ₹5000
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="price" value="5000+" class="h-4 w-4" <%= filters && filters.price === '5000+' ? 'checked' : '' %>>
+                                ₹5000+
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 pb-4 border-b border-gray-200">
+                        <h4 class="font-semibold text-gray-900 mb-3">Availability</h4>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center gap-3">
+                                <input type="checkbox" name="stock" value="instock" class="h-4 w-4" <%= filters && filters.stock && filters.stock.includes('instock') ? 'checked' : '' %>>
+                                In Stock
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="checkbox" name="stock" value="outofstock" class="h-4 w-4" <%= filters && filters.stock && filters.stock.includes('outofstock') ? 'checked' : '' %>>
+                                Out of Stock
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-900 mb-3">Sort By</h4>
+                        <select name="sort" class="w-full rounded-xl border border-gray-200 px-4 py-3 bg-gray-50 text-sm text-gray-700">
+                            <option value="newest" <%= !filters || filters.sort === 'newest' ? 'selected' : '' %>>Newest</option>
+                            <option value="price-low" <%= filters && filters.sort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+                            <option value="price-high" <%= filters && filters.sort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-xl hover:shadow-lg transition">Apply filters</button>
+                    <a href="/products/all" class="block text-center mt-4 text-sm text-gray-500 hover:text-gray-700">Reset filters</a>
+                </form>
             </div>
 
             <!-- Products Grid -->
@@ -116,7 +126,10 @@
                 <% if (products && products.length > 0) { %>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <% products.forEach(function(product) { %>
-                            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition transform hover:scale-105">
+                            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition transform hover:scale-105 relative">
+                                <!-- Invisible View Details Button -->
+                                <a href="/products/<%= product._id %>" class="absolute inset-0 z-10 opacity-0"></a>
+
                                 <!-- Product Image -->
                                 <div class="relative bg-gradient-to-br from-yellow-100 to-yellow-200 h-48 flex items-center justify-center overflow-hidden group">
                                     <svg class="w-24 h-24 text-yellow-600 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +155,7 @@
                                 </div>
 
                                 <!-- Product Details -->
-                                <div class="p-6">
+                                <div class="p-6 relative z-0">
                                     <!-- Product Name -->
                                     <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                                         <%= product.title || product.name %>
@@ -180,22 +193,23 @@
                                     <!-- Action Buttons -->
                                     <div class="flex flex-col gap-2">
                                         <% if (product.stock > 0) { %>
-                                            <a href="/booking/make?id=<%= product._id %>" class="w-full py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-lg hover:shadow-lg transition text-center">
+                                            <a href="/bookings/make/<%= product._id %>" class="w-full inline-flex items-center justify-center py-2 px-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-lg hover:shadow-lg transition text-center">
                                                 Book Now
                                             </a>
                                         <% } else { %>
-                                            <button disabled class="w-full py-2 bg-gray-300 text-gray-600 font-bold rounded-lg cursor-not-allowed text-center">
+                                            <button disabled class="w-full inline-flex items-center justify-center py-2 px-3 bg-gray-300 text-gray-600 font-bold rounded-lg cursor-not-allowed text-center">
                                                 Out of Stock
                                             </button>
                                         <% } %>
-                                        <button class="w-full py-2 border-2 border-yellow-300 text-yellow-700 font-bold rounded-lg hover:bg-yellow-50 transition">
-                                            <span class="inline-flex items-center justify-center">
+                                        <form action="/products/wishlist" method="POST" class="w-full">
+                                            <input type="hidden" name="productId" value="<%= product._id %>">
+                                            <button type="submit" class="w-full inline-flex items-center justify-center py-2 border-2 border-yellow-300 text-yellow-700 font-bold rounded-lg hover:bg-yellow-50 transition">
                                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                                 </svg>
                                                 Wishlist
-                                            </span>
-                                        </button>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -221,21 +235,5 @@
         </div>
     </div>
 
-    <script>
-        // Sort functionality
-        document.getElementById('sortBy').addEventListener('change', function(e) {
-            const sortValue = e.target.value;
-            console.log('Sorting by:', sortValue);
-            // You can implement sorting logic here
-        });
-
-        // Stock filter
-        document.querySelectorAll('.stock-filter').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                console.log('Filter changed');
-                // You can implement filtering logic here
-            });
-        });
-    </script>
 </body>
 </html>

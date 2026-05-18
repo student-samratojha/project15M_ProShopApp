@@ -26,9 +26,6 @@ const bookingSchema = new mongoose.Schema(
         "pending",
         "confirmed",
         "shipped",
-        "out for delivery",
-        "delivered",
-        "cancelled",
       ],
       default: "pending",
     },
@@ -39,14 +36,22 @@ const bookingSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["credit card", "paypal", "bank transfer"],
+      enum: ["credit card", "debit card", "upi", "net banking","cash_on_delivery","bank transfer"],
       default: "credit card",
     },
     deliveryAddress: {
       type: String,
       required: true,
     },
-
+    deliveryCity:{
+      type:String,
+      required:true
+    },
+shipped:{
+  type:mongoose.Schema.Types.ObjectId,
+  ref:"Shipped",
+  default:null
+},
     deliveryDate: {
       type: Date,
       required: true,

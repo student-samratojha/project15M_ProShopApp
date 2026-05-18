@@ -1,7 +1,8 @@
 const bookingModel = require("../db/models/booking.model");
 const productModel = require("../db/models/product.model");
+const shippedModel = require("../db/models/shipped.model");
 const userModel = require("../db/models/user.model");
-const { auditLog }  = require("../helper/audit.helper");
+const { auditLog } = require("../helper/audit.helper");
 async function manageBookings(req, res) {
   try {
     const userId = req.user.id;
@@ -16,11 +17,11 @@ async function manageBookings(req, res) {
     );
     const bookings = await bookingModel
       .find({ user: userId })
-      .populate("product");
+      .populate("product").populate("shipped").populate("assignedTo");
     if (bookings.length === 0) {
-      return res.render("manageBookings", { bookings: [], user });
+      return res.render("customer/manageBookings", { bookings: [], user });
     }
-    res.render("manageBookings", { bookings, user });
+    res.render("customer/manageBookings", { bookings, user });
   } catch (error) {
     console.error("Error fetching bookings:", error);
     res.redirect("/secure/customer?error=Unable to fetch bookings");
@@ -69,6 +70,9 @@ async function cancelBooking(req, res) {
     }
     booking.status = "cancelled";
     await booking.save();
+    const product = await productModel.findById(booking.product);
+    product.quantity += booking.quantity;
+    await product.save(); 
     await auditLog(
       req,
       res,
@@ -89,7 +93,7 @@ async function cancelBooking(req, res) {
 async function makeBooking(req, res) {
   try {
     const userId = req.user.id;
-    const { id } = req.query;
+    const id = req.params.productId;
     const product = await productModel.findById(id);
     if (!product) {
       await auditLog(
@@ -113,11 +117,34 @@ async function makeBooking(req, res) {
       false,
       "info",
     );
-    res.render("makeBooking", { product, user });
+    res.render("customer/makeBooking", { product, user });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.redirect("/secure/customer?error=Unable to fetch products");
   }
+}
+function adjustDate(inputDate) {
+  const givenDate = new Date(inputDate);
+  const currentDate = new Date();
+
+  // Time difference in milliseconds
+  const diffTime = givenDate - currentDate;
+
+  // Convert into days
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  // Clone original date
+  let resultDate = new Date(givenDate);
+
+  // Agar 3 din se jyada gap hai
+  if (Math.abs(diffDays) > 3) {
+    resultDate.setDate(resultDate.getDate() - 1);
+  } else {
+    // warna 2 din aage
+    resultDate.setDate(resultDate.getDate() + 2);
+  }
+
+  return resultDate.toDateString();
 }
 
 async function createBooking(req, res) {
@@ -126,7 +153,7 @@ async function createBooking(req, res) {
     const {
       productId,
       quantity,
-      deliveryAddress,
+      selectedAddressIndex,
       paymentMethod,
       deliveryDate,
     } = req.body;
@@ -143,16 +170,20 @@ async function createBooking(req, res) {
       return res.redirect("/secure/customer?error=Product not found");
     }
     const user = await userModel.findById(userId);
-    const totalPrice = product.price * quantity;
+    const totalPrice = product.price * quantity + product.shippingCharge;
     const booking = new bookingModel({
       user: userId,
       product: productId,
       quantity,
       totalPrice,
-      deliveryAddress,
+      deliveryAddress: user.addresses[selectedAddressIndex],
+      deliveryCity:user.addresses[selectedAddressIndex].city,
       paymentMethod,
-      deliveryDate,
+      deliveryDate: adjustDate(deliveryDate),
     });
+    const prduct = await productModel.findById(productId);
+    prduct.quantity -= quantity;
+    await prduct.save();
     await booking.save();
     await auditLog(
       req,
@@ -162,9 +193,7 @@ async function createBooking(req, res) {
       false,
       "info",
     );
-    res.redirect(
-      "/secure/manage-bookings?success=Booking created successfully",
-    );
+    res.redirect("/bookings/manage?success=Booking created successfully");
   } catch (error) {
     console.error("Error creating booking:", error);
     res.redirect("/secure/customer?error=Unable to create booking");
@@ -175,21 +204,61 @@ async function updateBooking(req, res) {
   try {
     const bookingId = req.body.id;
     const { status } = req.body;
+
     const booking = await bookingModel.findById(bookingId);
+
     if (!booking) {
       await auditLog(
         req,
-
         res,
         "Failed Booking Update",
         `User ${req.user.username} attempted to update a booking that does not exist.`,
         false,
         "warning",
       );
+
       return res.redirect("/secure/employee?error=Booking not found");
     }
+
     booking.status = status;
+
+    const s = await shippedModel.create({
+      booking: bookingId,
+
+      employee: req.user.id,
+
+      deliveryDate: booking.deliveryDate,
+
+      detailes: "",
+
+      currentCity: "Bangalore",
+
+      currentAddress: "MotherHub Bangalore",
+
+      deliveryAddress: booking.deliveryAddress,
+
+      deliveryCity: booking.deliveryCity,
+
+      status: "shipped",
+
+      // FIRST TRACKING LOG
+      trackingLogs: [
+        {
+          status: "shipped",
+
+          city: "Bangalore",
+
+          address: "MotherHub Bangalore",
+
+          message: "Dispatched from MotherHub Bangalore",
+        },
+      ],
+    });
+
+    booking.shipped = s._id;
+
     await booking.save();
+
     await auditLog(
       req,
       res,
@@ -198,20 +267,23 @@ async function updateBooking(req, res) {
       false,
       "info",
     );
-    res.redirect("/secure/employee?success=Booking updated successfully");
+
+    res.redirect("/ship/manage?success=Booking updated successfully");
+
   } catch (error) {
     console.error("Error updating booking:", error);
+
     res.redirect("/secure/employee?error=Unable to update booking");
   }
 }
-
 async function viewAllBookings(req, res) {
   try {
     const bookings = await bookingModel
       .find()
       .populate("user")
-      .populate("product");
-
+      .populate("product").populate("assignedTo");
+const employees = await userModel.find({role:"employee"});
+    
     const user = await userModel.findById(req.user.id);
     auditLog(
       req,
@@ -221,7 +293,7 @@ async function viewAllBookings(req, res) {
       false,
       "info",
     );
-    res.render("allBookings", { bookings, admin: user });
+    res.render("admin/allBookings", { bookings,employees, admin: user });
   } catch (error) {
     console.error("Error fetching bookings:", error);
     res.redirect("/secure/admin?error=Unable to fetch bookings");
@@ -257,6 +329,7 @@ async function assignBooking(req, res) {
       return res.redirect("/secure/admin?error=Employee not found");
     }
     booking.assignedTo = employeeId;
+    booking.status = "confirmed";
     await booking.save();
     await auditLog(
       req,
@@ -279,7 +352,7 @@ async function employeeBookManage(req, res) {
     const bookings = await bookingModel
       .find({ assignedTo: userId })
       .populate("product")
-      .populate("user");
+      .populate("user").populate("shipped");
     const employee = await userModel.findById(userId);
     if (bookings.length === 0) {
       await auditLog(
@@ -290,7 +363,7 @@ async function employeeBookManage(req, res) {
         false,
         "info",
       );
-      return res.render("employeeBookings", { bookings: [], employee });
+      return res.render("employee/employeeBookings", { bookings: [], employee });
     }
     auditLog(
       req,
@@ -300,7 +373,7 @@ async function employeeBookManage(req, res) {
       false,
       "info",
     );
-    res.render("employeeBookings", { bookings, employee });
+    res.render("employee/employeeBookings", { bookings, employee });
   } catch (error) {
     console.error("Error fetching employee bookings:", error);
     res.redirect("/secure/employee?error=Unable to fetch bookings");
