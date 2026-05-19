@@ -25,7 +25,7 @@
                 </div>
                 <div class="flex items-center space-x-4 nav-text">
                     <span class="text-gray-700 font-medium">Employee: <%= employee.name %></span>
-                    <a href="/secure/employee" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition">Dashboard</a>
+                    <a href="/employee/dashboard" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition">Dashboard</a>
                     <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
                 </div>
             </div>
@@ -109,6 +109,9 @@
                                 <p class="text-sm text-gray-600 mb-3">
                                     <strong>Customer:</strong> <%= booking.user ? booking.user.name : 'Unknown' %>
                                 </p>
+                                 <p class="text-sm capitalize font-semibold text-green-600 mb-3">
+                                    <strong class=" text-gray-600">Payment:</strong> <%= booking.paymentMethod %> (<%=booking.paymentStatus %>)
+                                </p>
                                 <p class="text-sm text-gray-600">
                                     <strong>Phone:</strong> <%= booking.user && booking.user.phone ? booking.user.phone : 'N/A' %>
                                 </p>
@@ -142,7 +145,7 @@
                                     </span>
                                 </div>
                                  <% if (booking.status === 'confirmed') { %>
-                                    <form action="/bookings/update" method="POST" class="space-y-2">
+                                    <form action="/employee/bookings/update" method="POST" class="space-y-2">
                                         <input type="hidden" name="id" value="<%= booking._id %>">
                                         <input type="hidden" name="status" value="shipped">
                                         <button type="submit" class="w-full px-3 py-2 bg-purple-500 text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm">
@@ -150,7 +153,7 @@
                                         </button>
                                     </form>
                                 <% } else if (booking.status === 'shipped') { %>
-                                    <a href="/ship/manage" class="w-full px-3 py-2 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 transition text-sm block text-center">
+                                    <a href="/employee/ship/manage" class="w-full px-3 py-2 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 transition text-sm block text-center">
                                         Manage Tracking
                                     </a>
                                 <% } %>
@@ -203,7 +206,7 @@
                     </svg>
                     <h3 class="text-2xl font-bold text-gray-900 mb-2">No assigned bookings</h3>
                     <p class="text-gray-600 mb-6">You don't have any bookings assigned yet. Check back soon!</p>
-                    <a href="/secure/employee" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition">
+                    <a href="/employee/dashboard" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>

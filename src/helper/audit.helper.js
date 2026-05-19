@@ -24,7 +24,7 @@ async function auditLog(
 
       statusCode: res.statusCode || 200,
 
-      ip: req.headers["x-forwarded-for"] || req.socket?.remoteAddress || req.ip,
+      ip: req.headers["x-forwarded-for"] || req.socket?.remoteAddress || req.ip || "unknown",
 
       userAgent: req.headers["user-agent"] || "",
 

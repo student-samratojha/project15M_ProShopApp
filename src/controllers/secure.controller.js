@@ -2,13 +2,17 @@ const userModel = require("../db/models/user.model");
 const auditHelper = require("../helper/audit.helper");
 const { auditLog } = auditHelper;
 const categoryModel = require("../db/models/category.model");
+const { sendNotification } = require("../helper/notification.helper");
 const productModel = require("../db/models/product.model");
 const bookingModel = require("../db/models/booking.model");
+const notificationModel = require("../db/models/notification.model");
 const bcrypt = require("bcrypt");
+const auditModel = require("../db/models/audit.model");
 async function adminDashboard(req, res) {
   try {
     const users = await userModel.find().select("-password");
     const audits = await auditHelper.getAuditLogs(10);
+    const totalAudits = await auditModel.countDocuments();
     const bookings = await bookingModel
       .find()
       .populate("user")
@@ -16,14 +20,12 @@ async function adminDashboard(req, res) {
     const employees = await userModel
       .find({ role: "employee" })
       .select("-password");
-    const admin = await userModel
-      .findOne({ role: "admin" })
-      .select("-password");
     res.render("admin/dashboard", {
       users,
-      admin,
+      admin: req.user,
       bookings,
       employees,
+      totalAudits,
       audits,
     });
   } catch (error) {
@@ -34,7 +36,6 @@ async function adminDashboard(req, res) {
 
 async function employeeDashboard(req, res) {
   try {
-    const user = await userModel.findById(req.user._id).select("-password");
     const category = await categoryModel.find({ employee: req.user._id });
     const categoryIds = category.map((cat) => cat._id);
     const products = await productModel
@@ -45,7 +46,7 @@ async function employeeDashboard(req, res) {
       .populate("user")
       .populate("product");
     res.render("employee/dashboard", {
-      user,
+      user: req.user,
       category,
       products,
       bookings,
@@ -58,11 +59,12 @@ async function employeeDashboard(req, res) {
 
 async function customerDashboard(req, res) {
   try {
-    const user = await userModel.findById(req.user._id).select("-password");
     const bookings = await bookingModel
-      .find({ user: req.user._id });
+      .find({ user: req.user._id }).populate("product");
+    const notifications = await notificationModel.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(5); // Fetch latest 5 notifications
+    const unreadNotificationsCount = await notificationModel.countDocuments({ user: req.user._id, isRead: false });
     res.render("customer/dashboard", {
-      user,bookings
+      user: req.user, bookings, notifications, unreadNotificationsCount
     });
   } catch (error) {
     console.error("Customer Dashboard Error:", error.message);
@@ -107,7 +109,7 @@ async function deactivateAccount(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/admin?deactivated=false");
+      return res.redirect("/admin/dashboard?deactivated=false");
     }
     await userModel.findByIdAndUpdate(id, {
       isActive: false,
@@ -120,7 +122,7 @@ async function deactivateAccount(req, res) {
       false,
       "warning",
     );
-    return res.redirect("/secure/admin?deactivated=true");
+    return res.redirect("/admin/dashboard?deactivated=true");
   } catch (error) {
     await auditHelper.auditLog(
       req,
@@ -131,7 +133,7 @@ async function deactivateAccount(req, res) {
       "critical",
     );
     console.error("Deactivate Account Error:", error.message);
-    res.redirect("/secure/admin?deactivated=false");
+    res.redirect("/admin/dashboard?deactivated=false");
   }
 }
 
@@ -151,7 +153,7 @@ async function reactivateAccount(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/admin?reactivated=false");
+      return res.redirect("/admin/dashboard?reactivated=false");
     }
     await userModel.findByIdAndUpdate(id, {
       isActive: true,
@@ -164,7 +166,7 @@ async function reactivateAccount(req, res) {
       false,
       "info",
     );
-    return res.redirect("/secure/admin?reactivated=true");
+    return res.redirect("/admin/dashboard?reactivated=true");
   } catch (error) {
     await auditHelper.auditLog(
       req,
@@ -175,32 +177,21 @@ async function reactivateAccount(req, res) {
       "critical",
     );
     console.error("Reactivate Account Error:", error.message);
-    res.redirect("/secure/admin?reactivated=false");
+    res.redirect("/admin/dashboard?reactivated=false");
   }
 }
 async function editProfile(req, res) {
   try {
     // =========================
-    // FIND USER
-    // =========================
-    const user = await userModel.findById(req.user._id).select("-password");
-
-    if (!user) {
-      return res.redirect(
-        `/secure/${req.user.role}?Error_During_Update-UserData_Not_Found`,
-      );
-    }
-
-    // =========================
     // RENDER PAGE
     // =========================
     return res.render("edit-profile", {
       title: "Edit Profile",
-      user,
+      user: req.user,
     });
   } catch (error) {
     console.error("Edit Profile Error:", error.message);
-    return res.redirect(`/secure/${req.user.role}?Error_During_Update`);
+    return res.redirect(`/${req.user.role}/dashboard?Error_During_Update`);
   }
 }
 
@@ -212,9 +203,9 @@ async function updateProfile(req, res) {
     const { name, username, phone, avatar, gender, dateOfBirth } = req.body;
 
     // =========================
-    // FIND USER
+    // USE LOGGED IN USER
     // =========================
-    const user = await userModel.findById(req.user._id);
+    const user = req.user;
 
     if (!user) {
       await auditLog(
@@ -226,7 +217,7 @@ async function updateProfile(req, res) {
         "warning",
       );
 
-      return res.redirect(`/secure/${req.user.role}?updated=false`);
+      return res.redirect(`/${req.user.role}/dashboard?updated=false`);
     }
 
     // =========================
@@ -248,7 +239,7 @@ async function updateProfile(req, res) {
         );
 
         return res.redirect(
-          `/secure/${req.user.role}?updated=false&error=username`,
+          `/${req.user.role}/dashboard?updated=false&error=username`,
         );
       }
 
@@ -274,7 +265,7 @@ async function updateProfile(req, res) {
         );
 
         return res.redirect(
-          `/secure/${req.user.role}?updated=false&error=phone`,
+          `/${req.user.role}/dashboard?updated=false&error=phone`,
         );
       }
 
@@ -308,11 +299,17 @@ async function updateProfile(req, res) {
       true,
       "info",
     );
+    await sendNotification(
+      user._id,
+      `Your profile information has been updated.`,
+      "account",
+      `/${user.role}/dashboard`,
+    );
 
     // =========================
     // RESPONSE
     // =========================
-    return res.redirect(`/secure/${req.user.role}?updated=true`);
+    return res.redirect(`/${req.user.role}/dashboard?updated=true`);
   } catch (error) {
     console.error("Update Profile Error:", error.message);
 
@@ -325,7 +322,7 @@ async function updateProfile(req, res) {
       "critical",
     );
 
-    return res.redirect(`/secure/${req.user.role}?updated=false`);
+    return res.redirect(`/${req.user.role}/dashboard?updated=false`);
   }
 }
 
@@ -334,7 +331,7 @@ async function createEmployee(req, res) {
     res.render("admin/createEmployee");
   } catch (error) {
     console.error("Create Employee Error:", error.message);
-    res.redirect("/secure/admin?employee_created=false");
+    res.redirect("/admin/dashboard?employee_created=false");
   }
 }
 
@@ -366,7 +363,7 @@ async function createEmployeePost(req, res) {
         true,
         "warning",
       );
-      return res.redirect("/secure/admin?employee_created=false");
+      return res.redirect("/admin/dashboard?employee_created=false");
     }
     const newEmployee = new userModel({
       name,
@@ -389,61 +386,59 @@ async function createEmployeePost(req, res) {
       true,
       "info",
     );
-    return res.redirect("/secure/admin?employee_created=true");
+    return res.redirect("/admin/dashboard?employee_created=true");
   } catch (error) {
     console.error("Create Employee Error:", error.message);
-    res.redirect("/secure/admin?employee_created=false");
+    res.redirect("/admin/dashboard?employee_created=false");
   }
 }
 
 async function manageAddress(req, res) {
   try {
-    const user = await userModel.findById(req.user._id).select("-password");
     res.render("customer/manage-address", {
-      user,
+      user: req.user,
     });
   } catch (error) {
     console.error("Manage Address Error:", error.message);
-    res.redirect("/secure/manage?error=true");
+    res.redirect("/customer/address/manage?error=true");
   }
 }
 
 async function addAddress(req, res) {
   try {
     const { address } = req.body;
-    const user = await userModel.findById(req.user._id);
-    if (!user) {
+    if (!req.user) {
       await auditLog(
         req,
         res,
         "Add Address Failed",
-        `User with ID ${req.user._id} not found`,
+        "User not found",
         false,
         "warning",
       );
-      return res.redirect("/secure/manage?added=false");
+      return res.redirect("/customer/address/manage?added=false");
     }
-    if (user.addresses.length >= 5) {
+    if (req.user.addresses.length >= 5) {
       await auditLog(
         req,
         res,
         "Add Address Failed",
-        `User with ID ${req.user._id} already has 5 addresses`,
+        `User ${req.user.email} already has 5 addresses`,
         false,
         "warning",
       );
-      return res.redirect("/secure/manage?added=false&error=max_addresses");
+      return res.redirect("/customer/address/manage?added=false&error=max_addresses");
     }
-    if (user.addresses.includes(address)) {
+    if (req.user.addresses.includes(address)) {
       await auditLog(
         req,
         res,
         "Add Address Failed",
-        `User with ID ${req.user._id} already has this address`,
+        `User ${req.user.email} already has this address`,
         false,
         "warning",
       );
-      return res.redirect("/secure/manage?added=false&error=duplicate_address");
+      return res.redirect("/customer/address/manage?added=false&error=duplicate_address");
     }
     await userModel.findByIdAndUpdate(req.user._id, {
       $push: { addresses: address },
@@ -452,30 +447,35 @@ async function addAddress(req, res) {
       req,
       res,
       "Address Added",
-      `New address added for user ${user.email}`,
+      `New address added for user ${req.user.email}`,
       true,
       "info",
     );
-    res.redirect("/secure/manage?added=true");
+    await sendNotification(
+      req.user._id,
+      `New address "${address.addressLine}" added to your account.`,
+      "account",
+      "/customer/address/manage",
+    );
+    res.redirect("/customer/address/manage?added=true");
   } catch (error) {
     console.error("Add Address Error:", error.message);
-    res.redirect("/secure/manage?added=false&error=server_error");
+    res.redirect("/customer/address/manage?added=false&error=server_error");
   }
 }
 async function deleteAddress(req, res) {
   try {
     const { addressId, address } = req.body;
-    const user = await userModel.findById(req.user._id);
-    if (!user) {
+    if (!req.user) {
       await auditLog(
         req,
         res,
         "Delete Address Failed",
-        `User with ID ${req.user._id} not found`,
+        "User not found",
         false,
         "warning",
       );
-      return res.redirect("/secure/manage?deleted=false");
+      return res.redirect("/customer/address/manage?deleted=false");
     }
 
     const pullQuery = addressId ? { _id: addressId } : address ? address : null;
@@ -489,7 +489,7 @@ async function deleteAddress(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/manage?deleted=false&error=invalid_request");
+      return res.redirect("/customer/address/manage?deleted=false&error=invalid_request");
     }
 
     await userModel.findByIdAndUpdate(req.user._id, {
@@ -499,14 +499,56 @@ async function deleteAddress(req, res) {
       req,
       res,
       "Address Deleted",
-      `Address deleted for user ${user.email}`,
+      `Address deleted for user ${req.user.email}`,
       true,
       "info",
     );
-    res.redirect("/secure/manage?deleted=true");
+    await sendNotification(
+      req.user._id,
+      `An address has been removed from your account.`,
+      "account",
+      "/customer/address/manage",
+    );
+    res.redirect("/customer/address/manage?deleted=true");
   } catch (error) {
     console.error("Delete Address Error:", error.message);
-    res.redirect("/secure/manage?deleted=false&error=server_error");
+    res.redirect("/customer/address/manage?deleted=false&error=server_error");
+  }
+}
+
+async function getNotifications(req, res) {
+  try {
+    const notifications = await notificationModel.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const unreadNotificationsCount = await notificationModel.countDocuments({ user: req.user._id, isRead: false });
+    res.render("customer/notifications", {
+      user: req.user,
+      notifications,
+      unreadNotificationsCount
+    });
+  } catch (error) {
+    console.error("Get Notifications Error:", error.message);
+    res.redirect("/customer/dashboard?error=Unable to fetch notifications");
+  }
+}
+
+async function openNotification(req, res) {
+  try {
+    const notification = await notificationModel.findByIdAndUpdate(req.params.id, { isRead: true });
+    if (!notification) return res.redirect("/customer/dashboard");
+    res.redirect(notification.link || "/customer/dashboard");
+  } catch (error) {
+    console.error("Open Notification Error:", error.message);
+    res.redirect("/customer/dashboard");
+  }
+}
+
+async function markAllNotificationsAsRead(req, res) {
+  try {
+    await notificationModel.updateMany({ user: req.user._id, isRead: false }, { isRead: true });
+    res.redirect("/customer/dashboard?success=All notifications marked as read");
+  } catch (error) {
+    console.error("Mark All Read Error:", error.message);
+    res.redirect("/customer/dashboard?error=Unable to update notifications");
   }
 }
 
@@ -524,4 +566,7 @@ module.exports = {
   createEmployeePost,
   editProfile,
   updateProfile,
+  getNotifications,
+  openNotification,
+  markAllNotificationsAsRead
 };

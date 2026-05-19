@@ -28,11 +28,11 @@
                     <% if (user) { %>
                         <span class="text-gray-700 font-medium">Welcome, <%= user.name %></span>
                         <% if (user.role === 'admin') { %>
-                            <a href="/secure/admin" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Admin Panel</a>
+                            <a href="/admin/dashboard" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Admin Panel</a>
                         <% } else if (user.role === 'employee') { %>
-                            <a href="/secure/employee" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">Employee Panel</a>
+                            <a href="/employee/dashboard" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">Employee Panel</a>
                         <% } else { %>
-                            <a href="/secure/customer" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Dashboard</a>
+                            <a href="/customer/dashboard" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Dashboard</a>
                         <% } %>
                         <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
                     <% } else { %>
@@ -99,79 +99,91 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <h2 class="text-4xl font-bold text-center text-gray-900 mb-16">Key Features</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Feature 1 -->
-            <div class="bg-blue-100 rounded-2xl p-8 hover:shadow-xl transition transform hover:-translate-y-2">
-                <div class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-blue-900 mb-3">Fast Performance</h3>
-                <p class="text-blue-800">Lightning-fast product management with optimized database queries</p>
-            </div>
-
-            <!-- Feature 2 -->
-            <div class="bg-green-100 rounded-2xl p-8 hover:shadow-xl transition transform hover:-translate-y-2">
-                <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-green-900 mb-3">Secure & Safe</h3>
-                <p class="text-green-800">Enterprise-grade security with encrypted data and role-based access</p>
-            </div>
-
-            <!-- Feature 3 -->
+            <!-- Feature 1: Booking System -->
             <div class="bg-yellow-100 rounded-2xl p-8 hover:shadow-xl transition transform hover:-translate-y-2">
                 <div class="w-14 h-14 bg-yellow-500 rounded-full flex items-center justify-center mb-4">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-yellow-900 mb-3">Analytics</h3>
-                <p class="text-yellow-800">Real-time insights and detailed reports on product performance</p>
+                <h3 class="text-xl font-bold text-yellow-900 mb-3">Booking System</h3>
+                <p class="text-yellow-800">Seamless booking process for customers with automated employee assignments.</p>
             </div>
 
-            <!-- Feature 4 -->
+            <!-- Feature 2: Instant Notifications -->
             <div class="bg-red-100 rounded-2xl p-8 hover:shadow-xl transition transform hover:-translate-y-2">
                 <div class="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center mb-4">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-red-900 mb-3">Easy Integration</h3>
-                <p class="text-red-800">Seamless integration with your existing systems and workflows</p>
+                <h3 class="text-xl font-bold text-red-900 mb-3">Smart Alerts</h3>
+                <p class="text-red-800">Real-time notifications for order updates, account security, and exclusive deals.</p>
+            </div>
+
+            <!-- Feature 3: Engagement Tools -->
+            <div class="bg-blue-100 rounded-2xl p-8 hover:shadow-xl transition transform hover:-translate-y-2">
+                <div class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-blue-900 mb-3">Engagement Tools</h3>
+                <p class="text-blue-800">Personalized wishlists and integrated feedback systems for better experience.</p>
+            </div>
+
+            <!-- Feature 4: Profile Management -->
+            <div class="bg-green-100 rounded-2xl p-8 hover:shadow-xl transition transform hover:-translate-y-2">
+                <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-green-900 mb-3">Profile Control</h3>
+                <p class="text-green-800">Manage multiple addresses, personal security, and customized avatars easily.</p>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg"></div>
-                        <span class="font-bold text-blue-600">ProShop</span>
+    <footer class="bg-zinc-900 mt-20 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative p-[1px] bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 rounded-xl shadow-lg">
+                <div class="bg-gray-800 p-8 rounded-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                        <!-- Brand Column -->
+                        <div>
+                            <div class="flex items-center space-x-2 mb-4">
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <span class="font-bold text-white text-xl">ProShop</span>
+                            </div>
+                            <p class="text-gray-400 text-sm">Streamline your product management with cutting-edge solutions.</p>
+                        </div>
+                       
+                        <div>
+                            <h4 class="font-bold text-white mb-4">Company</h4>
+                            <ul class="space-y-2 text-sm text-gray-400">
+                                <li><a href="/about" class="hover:text-blue-400 transition">About Us</a></li>
+                                 </ul>
+                        </div>
+
+                        <!-- Support -->
+                        <div>
+                            <h4 class="font-bold text-white mb-4">Legal</h4>
+                            <ul class="space-y-2 text-sm text-gray-400">
+                                <li><a href="/contact" class="hover:text-blue-400 transition">Contact Us</a></li>
+                                </ul>
+                        </div>
                     </div>
-                    <p class="text-gray-600 text-sm">Streamline your product management</p>
+                    <div class="border-t border-gray-700 pt-8 text-center text-gray-500 text-sm">
+                        <p>&copy; 2026 ProShop. All rights reserved. Designed with passion and precision.</p>
+                    </div>
                 </div>
-               
-                <div>
-                    <h4 class="font-bold text-gray-900 mb-4">Company</h4>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="/about" class="hover:text-blue-600">About</a></li>
-                         </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-900 mb-4">Legal</h4>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="/contact" class="hover:text-blue-600">Contact</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-200 pt-8 text-center text-gray-600 text-sm">
-                <p>&copy; 2026 ProShop. All rights reserved.</p>
             </div>
         </div>
     </footer>

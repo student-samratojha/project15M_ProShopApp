@@ -14,7 +14,7 @@ async function getMakeCategory(req, res) {
         "Employee accessed category creation page",
       );
       return res.redirect(
-        "/secure/employee?error=You already have a category associated with your account",
+        "/employee/dashboard?error=You already have a category associated with your account",
       );
     }
     res.render("employee/makeCategory", {
@@ -23,7 +23,7 @@ async function getMakeCategory(req, res) {
   } catch (error) {
     console.error("Get Make Category Error:", error.message);
     res.redirect(
-      "/secure/employee?error=Unable to load category creation page",
+      "/employee/dashboard?error=Unable to load category creation page",
     );
   }
 }
@@ -56,7 +56,7 @@ async function createCategory(req, res) {
         "warning",
       );
 
-      return res.redirect("/secure/employee?error=Category title is required");
+      return res.redirect("/employee/dashboard?error=Category title is required");
     }
 
     // =========================
@@ -76,7 +76,7 @@ async function createCategory(req, res) {
         "warning",
       );
 
-      return res.redirect("/secure/employee?error=Category already exists");
+      return res.redirect("/employee/dashboard?error=Category already exists");
     }
 
     // =========================
@@ -134,7 +134,7 @@ async function createCategory(req, res) {
     // RESPONSE
     // =========================
     return res.redirect(
-      "/secure/employee?success=Category created successfully",
+      "/employee/dashboard?success=Category created successfully",
     );
   } catch (error) {
     console.error("Create Category Error:", error.message);
@@ -148,7 +148,7 @@ async function createCategory(req, res) {
       "critical",
     );
 
-    return res.redirect("/secure/employee?error=Unable to create category");
+    return res.redirect("/employee/dashboard?error=Unable to create category");
   }
 }
 
@@ -165,7 +165,7 @@ async function deleteCategory(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/admin?error=Category not found");
+      return res.redirect("/admin/dashboard?error=Category not found");
     }
     await categoryModel.findByIdAndUpdate(
       id,
@@ -180,7 +180,7 @@ async function deleteCategory(req, res) {
       false,
       "warning",
     );
-    return res.redirect("/secure/admin?Deleted_Category");
+    return res.redirect("/admin/dashboard?Deleted_Category");
   } catch (error) {
     console.error("Delete Category Error:", error.message);
 
@@ -192,7 +192,7 @@ async function deleteCategory(req, res) {
       false,
       "critical",
     );
-    return res.redirect("/secure/admin?error=Unable to delete category");
+    return res.redirect("/admin/dashboard?error=Unable to delete category");
   }
 }
 
@@ -210,7 +210,7 @@ async function editCategory(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/employee?error=Category not found");
+      return res.redirect("/employee/dashboard?error=Category not found");
     }
     if (category.employee.toString() !== req.user._id.toString()) {
       await auditLog(
@@ -221,9 +221,7 @@ async function editCategory(req, res) {
         false,
         "warning",
       );
-      return res.redirect(
-        "/secure/employee?error=You are not authorized to edit this category",
-      );
+      return res.redirect("/employee/dashboard?error=You are not authorized to edit this category");
     }
     res.render("employee/editCategory", {
       category,user
@@ -239,7 +237,7 @@ async function editCategory(req, res) {
       false,
       "critical",
     );
-    return res.redirect("/secure/admin?error=Unable to edit category");
+    return res.redirect("/employee/dashboard?error=Unable to edit category");
   }
 }
 
@@ -258,6 +256,7 @@ async function updateCategory(req, res) {
       metaTitle,
       metaDescription,
       keywords,
+      id,
     } = req.body;
 
     // =========================
@@ -275,7 +274,7 @@ async function updateCategory(req, res) {
         "warning",
       );
 
-      return res.redirect("/secure/employee?error=Category not found");
+      return res.redirect("/employee/dashboard?error=Category not found");
     }
 
     // =========================
@@ -296,7 +295,7 @@ async function updateCategory(req, res) {
       );
 
       return res.redirect(
-        "/secure/employee?error=You are not authorized to update this category",
+        "/employee/dashboard?error=You are not authorized to update this category",
       );
     }
 
@@ -313,7 +312,7 @@ async function updateCategory(req, res) {
         "warning",
       );
 
-      return res.redirect("/secure/employee?error=Category title is required");
+      return res.redirect("/employee/dashboard?error=Category title is required");
     }
 
     // =========================
@@ -335,7 +334,7 @@ async function updateCategory(req, res) {
       );
 
       return res.redirect(
-        "/secure/employee?error=Category title already exists",
+        "/employee/dashboard?error=Category title already exists",
       );
     }
 
@@ -395,7 +394,7 @@ async function updateCategory(req, res) {
     // RESPONSE
     // =========================
     return res.redirect(
-      "/secure/employee?success=Category updated successfully",
+      "/employee/dashboard?success=Category updated successfully",
     );
   } catch (error) {
     console.error("Update Category Error:", error.message);
@@ -409,7 +408,7 @@ async function updateCategory(req, res) {
       "critical",
     );
 
-    return res.redirect("/secure/employee?error=Unable to update category");
+    return res.redirect("/employee/dashboard?error=Unable to update category");
   }
 }
 module.exports = {

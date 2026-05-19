@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Shipments - ProShop Employee</title>
+    <title>Manage Tracking - ProShop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,153 +11,105 @@
         .nav-text { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-green-50 via-slate-50 to-green-50 min-h-screen">
-    <!-- Navigation -->
+<body class="bg-gradient-to-br from-indigo-50 via-slate-50 to-indigo-50 min-h-screen">
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     </div>
-                    <span class="text-2xl font-bold text-green-600">ProShop Employee</span>
+                    <span class="text-2xl font-bold text-indigo-600">ProShop Employee</span>
                 </div>
                 <div class="flex items-center space-x-4 nav-text">
-                    <span class="text-gray-700 font-medium">Welcome, <%= user.name %></span>
-                    <a href="/" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">Home</a>
-                    <a href="/bookings/employee/manage" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold hover:bg-orange-200 transition">Manage Bookings</a>
-                    <a href="/products/employee/manage" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Manage Products</a>
-                    <a href="/ship/employee/manage" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition">Manage Shipments</a>
-                    <a href="/secure/edit" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Edit Profile</a>
-                    <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
+                    <a href="/employee/dashboard" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 transition">Dashboard</a>
+                    <a href="/employee/bookings/manage" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition">Assigned Bookings</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto px-4 py-12">
-        <!-- Header Section -->
         <div class="mb-10">
-            <div class="rounded-2xl bg-gradient-to-r from-green-100 to-green-200 p-8 shadow-lg flex justify-between items-center border border-green-200">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Shipment Management</h1>
-                    <p class="text-gray-600">Monitor transit progress and update tracking details for assigned packages.</p>
-                </div>
-                <div class="bg-white/60 px-6 py-3 rounded-xl border border-green-300 backdrop-blur-sm hidden md:block text-right">
-                    <span class="text-xs font-bold text-green-700 uppercase tracking-widest">Active Assignments</span>
-                    <div class="text-3xl font-black text-green-800"><%= shipped.length %></div>
-                </div>
-            </div>
+            <h1 class="text-4xl font-bold text-gray-900">Live Shipment Tracking</h1>
+            <p class="text-gray-600 text-lg">Update real-time location and status logs for shipped orders.</p>
         </div>
 
-        <% if (shipped.length === 0) { %>
-            <div class="bg-white rounded-3xl p-16 text-center shadow-xl border-2 border-dashed border-green-200">
-                <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800">No Shipments Found</h2>
-                <p class="text-gray-500 mt-2">There are currently no shipments assigned to your account.</p>
-                <a href="/secure/employee" class="mt-6 inline-block px-6 py-2 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-200">Return to Dashboard</a>
-            </div>
-        <% } else { %>
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <% shipped.forEach(item => { %>
-                    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-green-100 flex flex-col hover:shadow-2xl transition duration-300">
-                        <!-- Shipment Card Header -->
-                        <div class="p-6 bg-green-50 border-b border-green-100 flex justify-between items-start">
-                            <div>
-                                <div class="flex items-center space-x-2">
-                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                    <span class="text-xs font-bold text-green-600 uppercase tracking-wider">Tracking #<%= item._id.toString().slice(-8).toUpperCase() %></span>
+        <% if (shipped && shipped.length > 0) { %>
+            <div class="grid grid-cols-1 gap-8">
+                <% shipped.forEach(shipment => { %>
+                    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-indigo-100 grid grid-cols-1 lg:grid-cols-3">
+                        <!-- Left: Info -->
+                        <div class="p-8 bg-slate-50 border-r border-indigo-50">
+                            <h2 class="text-xl font-bold text-indigo-900 mb-4">Order Info</h2>
+                            <div class="space-y-4 text-sm">
+                                <p><span class="text-gray-500 block">Product</span> <span class="font-bold text-gray-900"><%= shipment.booking ? shipment.booking.product.name : 'Unknown' %></span></p>
+                                <p><span class="text-gray-500 block">Destination Hub</span> <span class="font-bold text-gray-900"><%= shipment.deliveryCity %></span></p>
+                                <p><span class="text-gray-500 block">Current Status</span> 
+                                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-bold uppercase text-[10px]"><%= shipment.status.replace(/_/g, ' ') %></span>
+                                </p>
+                                <div class="pt-4 mt-4 border-t border-indigo-100">
+                                    <h3 class="font-bold text-indigo-800 mb-2">Tracking Logs</h3>
+                                    <div class="max-h-40 overflow-y-auto space-y-2 pr-2">
+                                        <% shipment.trackingLogs.reverse().forEach(log => { %>
+                                            <div class="bg-white p-2 rounded-lg border border-indigo-100 text-[11px]">
+                                                <p class="font-bold text-gray-800"><%= log.city %> - <%= log.status %></p>
+                                                <p class="text-gray-500"><%= new Date(log.time).toLocaleString() %></p>
+                                            </div>
+                                        <% }) %>
+                                    </div>
                                 </div>
-                                <h3 class="text-lg font-bold text-gray-900 mt-1">
-                                    Booking Ref: <span class="text-green-700"><%= item.booking ? item.booking._id.toString().slice(-6).toUpperCase() : 'N/A' %></span>
-                                </h3>
                             </div>
-                            <span class="px-4 py-1.5 bg-white text-green-700 rounded-full text-xs font-bold border border-green-200 shadow-sm capitalize">
-                                <%= item.status.replace(/_/g, ' ') %>
-                            </span>
                         </div>
-                        
-                        <!-- Shipment Card Body -->
-                        <div class="p-6 flex-1 space-y-6">
-                            <div class="grid grid-cols-2 gap-6 text-sm">
-                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                    <p class="text-gray-500 font-semibold mb-1">Current Hub</p>
-                                    <p class="text-gray-900 font-bold flex items-center">
-                                        <svg class="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-                                        <%= item.currentCity || 'Origin Hub' %>
-                                    </p>
-                                </div>
-                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                    <p class="text-gray-500 font-semibold mb-1">Destination</p>
-                                    <p class="text-gray-900 font-bold flex items-center">
-                                        <svg class="w-4 h-4 mr-1 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-                                        <%= item.deliveryCity || 'N/A' %>
-                                    </p>
-                                </div>
-                            </div>
 
-                            <!-- Update Form -->
-                            <form action="/ship/update" method="POST" class="space-y-4 pt-4 border-t border-slate-100">
-                                <input type="hidden" name="id" value="<%= item._id %>">
+                        <!-- Right: Update Form -->
+                        <div class="lg:col-span-2 p-8">
+                            <h2 class="text-xl font-bold text-gray-900 mb-6">Log New Movement</h2>
+                            <form action="/employee/ship/update" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <input type="hidden" name="id" value="<%= shipment._id %>">
                                 
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2 ml-1">Update Current Hub/City</label>
-                                    <input type="text" name="currentCity" value="<%= item.currentCity %>" required
-                                        class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:border-green-400 focus:outline-none focus:bg-white text-sm font-medium transition duration-200 shadow-inner">
-                                </div>
- <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2 ml-1">Current Address</label>
-                                    <textarea name="currentAddress" rows="2" placeholder="Enter current address..."
-                                        class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:border-green-400 focus:outline-none focus:bg-white text-sm font-medium transition duration-200 shadow-inner resize-none"><%= item.detailes %></textarea>
+                                    <label class="block text-xs font-bold text-indigo-700 uppercase mb-2">Current City</label>
+                                    <input type="text" name="currentCity" required value="<%= shipment.currentCity %>"
+                                        class="w-full px-4 py-3 border-2 border-indigo-50 rounded-xl focus:border-indigo-400 outline-none bg-indigo-50 font-bold">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2 ml-1">Transit Details / Log</label>
-                                    <textarea name="detailes" rows="2" placeholder="Enter status update details..."
-                                        class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:border-green-400 focus:outline-none focus:bg-white text-sm font-medium transition duration-200 shadow-inner resize-none"><%= item.detailes %></textarea>
+                                    <label class="block text-xs font-bold text-indigo-700 uppercase mb-2">Detailed Location/Hub</label>
+                                    <input type="text" name="currentAddress" required value="<%= shipment.currentAddress %>"
+                                        class="w-full px-4 py-3 border-2 border-indigo-50 rounded-xl focus:border-indigo-400 outline-none bg-indigo-50">
                                 </div>
-
-                                <button type="submit" 
-                                    class="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-2xl hover:shadow-lg transition transform hover:scale-[1.01] flex items-center justify-center space-x-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                    </svg>
-                                    <span>Update Track Logs</span>
-                                </button>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-indigo-700 uppercase mb-2">Tracking Message</label>
+                                    <textarea name="detailes" rows="2" placeholder="e.g. Arrived at sorting facility"
+                                        class="w-full px-4 py-3 border-2 border-indigo-50 rounded-xl focus:border-indigo-400 outline-none bg-indigo-50"></textarea>
+                                </div>
+                                
+                                <div class="md:col-span-2 pt-4">
+                                    <button type="submit" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition shadow-lg">
+                                        Update Tracking Status
+                                    </button>
+                                </div>
                             </form>
-                        </div>
-
-                        <!-- Metadata Footer -->
-                        <div class="p-4 bg-slate-50 text-[10px] flex items-center justify-between border-t border-slate-100">
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-                                <span class="text-gray-500 font-bold uppercase tracking-tighter">Controller: <%= user.username %></span>
-                            </div>
-                            <span class="text-gray-400 font-semibold italic">Shipment Age: <%= Math.floor((new Date() - new Date(item.createdAt)) / (1000 * 60 * 60 * 24)) %> Days</span>
                         </div>
                     </div>
                 <% }) %>
             </div>
+        <% } else { %>
+            <div class="bg-white rounded-3xl p-16 shadow-xl text-center border-2 border-dashed border-indigo-100">
+                <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10h.01M11 20h4m-4-8a3 3 0 110-6 3 3 0 010 6zm8 0a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-3">No Shipments Active</h3>
+                <p class="text-gray-600 mb-8 text-lg">Mark an assigned booking as 'Shipped' to start tracking movements here.</p>
+                <a href="/employee/bookings/manage" class="inline-flex items-center justify-center px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:shadow-xl transition transform hover:scale-105">
+                    View Assigned Bookings
+                </a>
+            </div>
         <% } %>
-
-        <!-- Bottom Navigation -->
-        <div class="mt-16 text-center">
-            <a href="/secure/employee" class="group inline-flex items-center px-8 py-3 bg-white text-green-600 font-bold rounded-2xl border-2 border-green-100 hover:border-green-400 hover:bg-green-50 transition duration-300">
-                <svg class="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Back to Dashboard
-            </a>
-        </div>
     </div>
 
-    <footer class="py-10 text-center text-gray-400 text-xs">
-        <p>&copy; 2024 ProShop Logistics. All rights reserved.</p>
+    <footer class="py-12 text-center text-gray-400 text-sm">
+        <p>&copy; 2024 ProShop Logistics Management.</p>
     </footer>
 </body>
 </html>

@@ -41,7 +41,7 @@ const shippedSchema = new Schema({
         required: true
     },
 
-    detailes: {
+    details: {
         type: String,
         default: ""
     },

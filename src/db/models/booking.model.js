@@ -39,6 +39,10 @@ const bookingSchema = new mongoose.Schema(
       enum: ["credit card", "debit card", "upi", "net banking","cash_on_delivery","bank transfer"],
       default: "credit card",
     },
+    transactionId: {
+      type: String,
+      default: "",
+    },
     deliveryAddress: {
       type: String,
       required: true,

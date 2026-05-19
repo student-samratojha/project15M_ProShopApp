@@ -30,11 +30,11 @@
                     <% if (user) { %>
                         <span class="text-gray-700 font-medium">Welcome, <%= user.name %></span>
                         <% if (user.role === 'admin') { %>
-                            <a href="/secure/admin" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Admin Panel</a>
+                            <a href="/admin/dashboard" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Admin Panel</a>
                         <% } else if (user.role === 'employee') { %>
-                            <a href="/secure/employee" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">Employee Panel</a>
+                            <a href="/employee/dashboard" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">Employee Panel</a>
                         <% } else { %>
-                            <a href="/secure/customer" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Dashboard</a>
+                            <a href="/customer/dashboard" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Dashboard</a>
                         <% } %>
                         <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
                     <% } else { %>
@@ -198,33 +198,7 @@
                     </div>
                 </div>
 
-                <!-- Feature 5: Audit & Logging -->
-                <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
-                    <div class="h-40 bg-gradient-to-br from-blue-300 to-blue-400 flex items-center justify-center">
-                        <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold text-blue-900 mb-3">Audit & Logging</h3>
-                        <p class="text-blue-800 mb-4">Track all user activities with comprehensive audit logs. Monitor account changes, product modifications, and system operations in real-time.</p>
-                        <ul class="space-y-2 text-sm text-blue-700">
-                            <li class="flex items-center space-x-2">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                <span>Activity tracking</span>
-                            </li>
-                            <li class="flex items-center space-x-2">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                <span>Timestamp records</span>
-                            </li>
-                            <li class="flex items-center space-x-2">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                <span>Success/failure tracking</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
+              
                 <!-- Feature 6: SEO Optimization -->
                 <div class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
                     <div class="h-40 bg-gradient-to-br from-green-300 to-green-400 flex items-center justify-center">
@@ -247,6 +221,115 @@
                             <li class="flex items-center space-x-2">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                                 <span>Auto-generated slugs</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Feature 7: Booking Management -->
+                <div class="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+                    <div class="h-40 bg-gradient-to-br from-yellow-300 to-yellow-400 flex items-center justify-center">
+                        <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-yellow-900 mb-3">Booking System</h3>
+                        <p class="text-yellow-800 mb-4">Seamless booking process for customers with automated assignment to specialized employees for efficient processing.</p>
+                        <ul class="space-y-2 text-sm text-yellow-700">
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Real-time booking tracking</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Employee assignment</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Delivery date preferences</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Feature 8: Notifications -->
+                <div class="bg-gradient-to-br from-red-100 to-red-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+                    <div class="h-40 bg-gradient-to-br from-red-300 to-red-400 flex items-center justify-center">
+                        <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-red-900 mb-3">Instant Notifications</h3>
+                        <p class="text-red-800 mb-4">Stay updated with a dedicated notification system that alerts users about order status, account changes, and special offers.</p>
+                        <ul class="space-y-2 text-sm text-red-700">
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Read/Unread tracking</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Category-wise alerts</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Direct link integration</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Feature 9: Wishlist & Feedback -->
+                <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+                    <div class="h-40 bg-gradient-to-br from-blue-300 to-blue-400 flex items-center justify-center">
+                        <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-blue-900 mb-3">Engagement Tools</h3>
+                        <p class="text-blue-800 mb-4">Enhance user experience with a personalized wishlist and a robust feedback system for continuous improvement.</p>
+                        <ul class="space-y-2 text-sm text-blue-700">
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Wishlist management</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Rating & review system</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Admin moderation</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Feature 10: Address & Profile -->
+                <div class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+                    <div class="h-40 bg-gradient-to-br from-green-300 to-green-400 flex items-center justify-center">
+                        <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-green-900 mb-3">Profile Management</h3>
+                        <p class="text-green-800 mb-4">Complete control over personal data, multiple saved delivery addresses, and avatar customization for a tailored experience.</p>
+                        <ul class="space-y-2 text-sm text-green-700">
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Multi-address support</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Detailed profile editing</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>Avatar & Bio support</span>
                             </li>
                         </ul>
                     </div>
@@ -461,20 +544,44 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-5">
-            
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg"></div>
-                        <span class="font-bold text-blue-600">ProShop</span>
+        <!-- Footer -->
+    <footer class="bg-zinc-900 mt-20 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative p-[1px] bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 rounded-xl shadow-lg">
+                <div class="bg-gray-800 p-8 rounded-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                        <!-- Brand Column -->
+                        <div>
+                            <div class="flex items-center space-x-2 mb-4">
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <span class="font-bold text-white text-xl">ProShop</span>
+                            </div>
+                            <p class="text-gray-400 text-sm">Streamline your product management with cutting-edge solutions.</p>
+                        </div>
+                       
+                        <div>
+                            <h4 class="font-bold text-white mb-4">Company</h4>
+                            <ul class="space-y-2 text-sm text-gray-400">
+                                <li><a href="/about" class="hover:text-blue-400 transition">About Us</a></li>
+                                 </ul>
+                        </div>
+
+                        <!-- Support -->
+                        <div>
+                            <h4 class="font-bold text-white mb-4">Legal</h4>
+                            <ul class="space-y-2 text-sm text-gray-400">
+                                <li><a href="/contact" class="hover:text-blue-400 transition">Contact Us</a></li>
+                                </ul>
+                        </div>
                     </div>
-                    <p class="text-gray-600 text-sm">The ultimate product management solution for modern businesses</p>
-                
-            </div>
-            <div class="border-t border-gray-200 pt-4 text-center text-gray-600 text-sm">
-                <p>&copy; 2026 ProShop. All rights reserved. Built with passion for better product management.</p>
+                    <div class="border-t border-gray-700 pt-8 text-center text-gray-500 text-sm">
+                        <p>&copy; 2026 ProShop. All rights reserved. Designed with passion and precision.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

@@ -27,9 +27,9 @@
                 <div class="flex items-center space-x-4 nav-text">
                     <span class="text-gray-700 font-medium">Welcome, <%= user.name %></span>
                     <a href="/" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition">Home</a>
-                    <a href="/bookings/employee/manage" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold hover:bg-orange-200 transition">Manage Bookings</a>
-                    <a href="/products/employee/manage" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Manage Products</a>
-                    <a href="/secure/edit" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Edit Profile</a>
+                    <a href="/employee/bookings/manage" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold hover:bg-orange-200 transition">Manage Bookings</a>
+                    <a href="/employee/products/manage" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">Manage Products</a>
+                    <a href="/user/edit" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Edit Profile</a>
                     <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
                 </div>
             </div>
@@ -61,7 +61,7 @@
 
         <!-- Action Buttons -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <a href="/categories/create" class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 text-center">
+            <a href="/employee/categories/create" class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 text-center">
                 <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -71,7 +71,7 @@
                 <p class="text-green-800">Add a new product category</p>
             </a>
 
-            <a href="/products/create" class="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 text-center">
+            <a href="/employee/products/create" class="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 text-center">
                 <div class="w-14 h-14 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -195,7 +195,7 @@
                                         </td>
                                         <td class="px-6 py-4 text-gray-700"><%= booking.deliveryDate ? new Date(booking.deliveryDate).toLocaleDateString() : 'N/A' %></td>
                                         <td class="px-6 py-4 text-blue-700">
-                    <a href="/bookings/employee/manage" class="text-blue-700  font-semibold transition">Manage Bookings</a>
+                    <a href="/employee/bookings/manage" class="text-blue-700  font-semibold transition">Manage Bookings</a>
                                             
                                         </td>
                                     </tr>
@@ -239,8 +239,11 @@
                                         <% } %>
                                     </div>
                                     <div class="flex gap-2">
-                                        <a href="/categories/edit/<%= cat._id %>" class="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold text-sm hover:bg-blue-200 transition text-center">Edit</a>
-                                        <a href="#" class="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg font-semibold text-sm hover:bg-red-200 transition text-center">Delete</a>
+                                        <a href="/employee/categories/edit/<%= cat._id %>" class="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold text-sm hover:bg-blue-200 transition text-center">Edit</a>
+                                        <form action="/admin/categories/delete" method="POST" class="flex-1" onsubmit="return confirm('Delete this category?')">
+                                            <input type="hidden" name="id" value="<%= cat._id %>">
+                                            <button type="submit" class="w-full px-3 py-2 bg-red-100 text-red-700 rounded-lg font-semibold text-sm hover:bg-red-200 transition text-center">Delete</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -254,7 +257,7 @@
                     </svg>
                     <p class="text-green-800 font-semibold mb-3">No categories yet</p>
                     <p class="text-green-700 mb-4">Create your first category to get started</p>
-                    <a href="/categories/make-category" class="inline-block px-6 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition">Create Category</a>
+                    <a href="/employee/categories/create" class="inline-block px-6 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition">Create Category</a>
                 </div>
             <% } %>
         </div>
@@ -299,8 +302,11 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 space-x-2">
-                                            <a href="/products/edit/<%= product._id %>" class="text-blue-600 hover:text-blue-700 font-semibold">Edit</a>
-                                            <a href="#" class="text-red-600 hover:text-red-700 font-semibold">Delete</a>
+                                            <a href="/employee/products/edit/<%= product._id %>" class="text-blue-600 hover:text-blue-700 font-semibold">Edit</a>
+                                            <form action="/employee/products/delete" method="POST" class="inline-block" onsubmit="return confirm('Delete this product?')">
+                                                <input type="hidden" name="id" value="<%= product._id %>">
+                                                <button type="submit" class="text-red-600 hover:text-red-700 font-semibold bg-transparent border-none cursor-pointer">Delete</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 <% }); %>
@@ -315,7 +321,7 @@
                     </svg>
                     <p class="text-yellow-800 font-semibold mb-3">No products yet</p>
                     <p class="text-yellow-700 mb-4">Create your first product to get started</p>
-                    <a href="/products/make-product" class="inline-block px-6 py-2 bg-yellow-500 text-white rounded-lg font-bold hover:bg-yellow-600 transition">Create Product</a>
+                    <a href="/employee/products/create" class="inline-block px-6 py-2 bg-yellow-500 text-white rounded-lg font-bold hover:bg-yellow-600 transition">Create Product</a>
                 </div>
             <% } %>
         </div>

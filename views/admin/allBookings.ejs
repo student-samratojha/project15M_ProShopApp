@@ -25,7 +25,7 @@
                 </div>
                 <div class="flex items-center space-x-4 nav-text">
                     <span class="text-gray-700 font-medium">Admin: <%= admin.name %></span>
-                    <a href="/secure/admin" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Dashboard</a>
+                    <a href="/admin/dashboard" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition">Dashboard</a>
                     <a href="/auth/logout" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 transition">Logout</a>
                 </div>
             </div>
@@ -129,7 +129,7 @@
 <%if(booking.assignedTo){%>
 <p class=' font-semibold text-green-700 '>Assigned</p>
 <%} else{%>
-                                    <form action="/bookings/assign" method="POST" class="space-y-3 gap-1 flex itmes-center">
+                                    <form action="/admin/bookings/assign" method="POST" class="space-y-3 gap-1 flex itmes-center">
 
                                         <input type="hidden"
                                             name="id"
@@ -201,7 +201,7 @@
             if (employeeId) {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '/booking/assign';
+                form.action = '/admin/bookings/assign';
                 form.innerHTML = `
                     <input type="hidden" name="id" value="${bookingId}">
                     <input type="hidden" name="employeeId" value="${employeeId}">

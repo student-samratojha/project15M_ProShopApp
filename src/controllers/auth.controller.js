@@ -2,6 +2,7 @@ const userModel = require("../db/models/user.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { auditLog } = require("../helper/audit.helper");
+const { sendNotification } = require("../helper/notification.helper");
 
 // =====================================
 // REGISTER PAGE
@@ -153,7 +154,7 @@ async function postRegister(req, res) {
     // =========================
     // CREATE USER
     // =========================
-    await userModel.create({
+    const newUser = await userModel.create({
       name,
 
       username: username ? username.toLowerCase() : email.split("@")[0],
@@ -187,6 +188,12 @@ async function postRegister(req, res) {
       `New user registered with email: ${email}`,
       true,
       "info",
+    );
+    await sendNotification(
+      newUser._id,
+      `Welcome to ProShop! Your account has been successfully created.`,
+      "account",
+      "/customer/dashboard",
     );
 
     return res.redirect("/auth/login?registered=true");
@@ -382,7 +389,7 @@ async function postLogin(req, res) {
     // =========================
     // ROLE REDIRECT
     // =========================
-    return res.redirect(`/secure/${user.role}?login=true`);
+    return res.redirect(`/${user.role}/dashboard?login=true`);
   } catch (error) {
     console.error("Login Error:", error.message);
 

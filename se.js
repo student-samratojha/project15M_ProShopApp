@@ -152,44 +152,7 @@ const seedProducts = async () => {
         metaDescription: "Best noise canceling headphones",
       },
 
-      {
-        name: "Nike Air Max 270",
-        slug: "nike-air-max-270",
-        description:
-          "Comfortable and stylish sneakers for daily wear.",
-        shortDescription: "Nike stylish sneakers",
-        price: 12999,
-        discountPrice: 10999,
-        category: categories[0]._id,
-        brand: "Nike",
-        sku: "NIKE-AM270",
-        stock: 35,
-        sold: 15,
-        images: [
-          "https://example.com/nike1.jpg",
-          "https://example.com/nike2.jpg",
-        ],
-        thumbnail: "https://example.com/nike-thumb.jpg",
-        colors: ["White", "Black", "Red"],
-        sizes: ["7", "8", "9", "10"],
-        tags: ["shoes", "nike", "sneakers"],
-        rating: 4.5,
-        numReviews: 70,
-        weight: 500,
-        dimensions: {
-          length: 30,
-          width: 12,
-          height: 10,
-        },
-        shippingCharge: 80,
-        warranty: "No Warranty",
-        returnPolicy: "5 Days Return",
-        isFeatured: true,
-        isAvailable: true,
-        status: "active",
-        metaTitle: "Nike Air Max 270",
-        metaDescription: "Comfortable Nike sneakers",
-      },
+     
 
       {
         name: "ASUS ROG Strix G16",

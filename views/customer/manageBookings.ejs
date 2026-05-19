@@ -62,9 +62,14 @@
                         Welcome, <%= user.name %>
                     </span>
 
-                    <a href="/secure/customer"
+                    <a href="/customer/dashboard"
                         class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">
                         Dashboard
+                    </a>
+
+                    <a href="/customer/feedback/make"
+                        class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition">
+                        Feedback
                     </a>
 
                     <a href="/auth/logout"
@@ -125,7 +130,7 @@
 
                                 <div>
 
-                                    <span class="px-4 py-2 rounded-full text-sm font-bold bg-white
+                                    <span class="px-4 py-1 rounded-full text-sm font-bold bg-white
                                         <%= booking.status === 'cancelled'
                                             ? 'text-red-600'
                                             : booking.status === 'delivered'
@@ -135,7 +140,6 @@
                                         <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
 
                                     </span>
-
                                 </div>
 
                             </div>
@@ -209,9 +213,15 @@
                                             Payment Method
                                         </p>
 
-                                        <p class="text-lg font-bold text-red-700 capitalize">
-                                            <%= booking.paymentMethod || 'N/A' %>
-                                        </p>
+                                        <p class="text-lg font-bold text-red-700 flex items-center justify-between capitalize">
+                                            <%= booking.paymentMethod || 'N/A' %> 
+                                            <%if(booking.paymentStatus !== "paid"){%>   
+<a href="/customer/bookings/payment/<%=booking._id%>"class='text-lg font-bold text-red-700 hover:underline transition duration-300'>Pay Now</a>
+<%} else {%>
+    <span class='text-lg font-bold text-green-600'>
+        Paid
+    </span>
+                           <%}%>             </p>
 
                                     </div>
 
@@ -309,26 +319,44 @@
                                         <h4 class="font-bold text-yellow-900 text-sm uppercase tracking-wider">Live Shipping Info</h4>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                                        <div class="bg-white/50 p-3 rounded-lg border border-yellow-100">
-                                            <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Transit Status</p>
-                                            <p class="text-sm font-bold text-gray-900 capitalize"><%= booking.shipped.status.replace(/_/g, ' ') %></p>
-                                        </div>
-                                         <div class="bg-white/50 p-3 rounded-lg border border-yellow-100">
-                                            <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Date</p>
-                                            <p class="text-sm font-bold text-gray-900"><%= booking.shipped.updatedAt.toLocaleString() || 'N/A' %></p>
-                                        </div>
-                                        <div class="bg-white/50 p-3 rounded-lg border border-yellow-100">
-                                            <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Current Address</p>
-                                            <p class="text-sm font-bold text-gray-900"><%= booking.shipped.currentAddress || 'Origin Sorting Center' %></p>
-                                        </div>
-                                        <div class="bg-white/50 p-3 rounded-lg border border-yellow-100">
-                                            <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Current Hub</p>
-                                            <p class="text-sm font-bold text-gray-900"><%= booking.shipped.currentCity || 'Origin Sorting Center' %></p>
-                                        </div>
-                                        <div class="bg-white/50 p-3 rounded-lg border border-yellow-100">
-                                            <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Tracking Log</p>
-                                            <p class="text-xs text-gray-700 italic leading-relaxed"><%= booking.shipped.detailes || 'Shipment initiated. Log pending.' %></p>
-                                        </div>
+                                        <% if (booking.shipped.trackingLogs && booking.shipped.trackingLogs.length > 0) { %>
+                                            <div class="md:col-span-5 space-y-3">
+                                                <% booking.shipped.trackingLogs.forEach(function(log, logIndex) { %>
+                                                    <div class="bg-white/50 p-3 rounded-lg border border-yellow-100">
+                                                        <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Log #<%= logIndex + 1 %></p>
+                                                        <p class="text-sm font-bold text-gray-900 capitalize">Status: <%= log.status.replace(/_/g, ' ') %></p>
+                                                        <p class="text-xs text-gray-700">City: <%= log.city || 'N/A' %></p>
+                                                        <p class="text-xs text-gray-700">Address: <%= log.address || 'N/A' %></p>
+                                                        <p class="text-xs text-gray-700 italic leading-relaxed">Message: <%= log.message || 'No message' %></p>
+                                                        <% if (log.time) { %>
+                                                            <p class="text-xs text-gray-500 mt-1">Time: <%= new Date(log.time).toLocaleString() %></p>
+                                                        <% } %>
+                                                    </div>
+                                                <% }); %>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="bg-white/50 p-3 rounded-lg border border-yellow-100 md:col-span-5">
+                                                <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Transit Status</p>
+                                                <p class="text-sm font-bold text-gray-900 capitalize"><%= booking.shipped.status.replace(/_/g, ' ') %></p>
+                                            </div>
+                                            <div class="bg-white/50 p-3 rounded-lg border border-yellow-100 md:col-span-5">
+                                                <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Date</p>
+                                                <p class="text-sm font-bold text-gray-900"><%= booking.shipped.updatedAt.toLocaleString() || 'N/A' %></p>
+                                            </div>
+                                            <div class="bg-white/50 p-3 rounded-lg border border-yellow-100 md:col-span-5">
+                                                <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Current Address</p>
+                                                <p class="text-sm font-bold text-gray-900"><%= booking.shipped.currentAddress || 'Origin Sorting Center' %></p>
+                                            </div>
+                                            <div class="bg-white/50 p-3 rounded-lg border border-yellow-100 md:col-span-5">
+                                                <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Current Hub</p>
+                                                <p class="text-sm font-bold text-gray-900"><%= booking.shipped.currentCity || 'Origin Sorting Center' %></p>
+                                            </div>
+                                            <div class="bg-white/50 p-3 rounded-lg border border-yellow-100 md:col-span-5">
+                                                <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Details</p>
+                                                <p class="text-xs text-gray-700 italic leading-relaxed"><%= booking.shipped.detailes || 'Shipment initiated. Log pending.' %></p>
+                            
+                                            </div>
+                                        <% } %>
                                     </div>
                                 </div>
                             <% } else { %>
@@ -340,7 +368,7 @@
                             <!-- Action Buttons -->
                             <div class="pt-4">
                                 <% if (booking.status !== 'cancelled' && booking.status !== 'delivered' && booking.status !== 'shipped') { %>
-                                    <form action="/bookings/cancel/<%= booking._id %>" method="POST">
+                                    <form action="/customer/bookings/cancel/<%= booking._id %>" method="POST">
                                         <button type="submit"
                                             onclick="return confirm('Are you sure you want to cancel this booking?')"
                                             class="w-full py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl transition duration-300">
@@ -396,7 +424,7 @@
                     You haven't created any bookings. Start by browsing products.
                 </p>
 
-                <a href="/secure/customer"
+                <a href="/customer/dashboard"
                     class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-2xl hover:shadow-xl transition">
 
                     <svg class="w-5 h-5 mr-2"

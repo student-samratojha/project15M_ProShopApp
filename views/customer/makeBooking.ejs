@@ -48,9 +48,14 @@
                         Welcome, <%= user.name %>
                     </span>
 
-                    <a href="/secure/customer"
+                    <a href="/customer/dashboard"
                         class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-semibold hover:bg-yellow-200 transition">
                         Dashboard
+                    </a>
+
+                    <a href="/customer/feedback/make"
+                        class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition">
+                        Feedback
                     </a>
 
                     <a href="/auth/logout"
@@ -180,7 +185,7 @@
                         Complete Your Booking
                     </h2>
 
-                    <form action="/bookings/create" method="POST" class="space-y-5">
+                    <form action="/customer/bookings/create" method="POST" class="space-y-5">
 
                         <input type="hidden" name="productId" value="<%= product._id %>">
 
@@ -387,7 +392,7 @@
                                 Confirm Booking
                             </button>
 
-                            <a href="/secure/customer"
+                            <a href="/customer/dashboard"
                                 class="w-full py-3 bg-gray-200 text-gray-800 font-bold rounded-lg hover:bg-gray-300 transition text-center">
                                 Cancel
                             </a>

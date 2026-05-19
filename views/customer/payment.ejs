@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment for Booking <%= booking._id %></title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Assuming a global style.css -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .booking-details, .payment-form {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .booking-details p, .payment-form label {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .booking-details span {
+            font-weight: bold;
+            color: #555;
+        }
+        .payment-form input[type="text"],
+        .payment-form select {
+            width: calc(100% - 22px); /* Account for padding and border */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+        .payment-form button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        .payment-form button:hover {
+            background-color: #0056b3;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complete Your Payment</h1>
+
+        <div class="booking-details">
+            <h2>Booking Summary</h2>
+            <p>Booking ID: <span><%= booking._id %></span></p>
+            <p>Product: <span><%= booking.product.name %></span></p>
+            <p>Quantity: <span><%= booking.quantity %></span></p>
+            <p>Total Price: <span>₹<%= booking.totalPrice.toFixed(2) %></span></p>
+            <p>Delivery Address: <span><%= booking.deliveryAddress %></span></p>
+            <p>Delivery City: <span><%= booking.deliveryCity %></span></p>
+            <p>Delivery Date: <span><%= new Date(booking.deliveryDate).toDateString() %></span></p>
+            <p>Current Payment Status: <span><%= booking.paymentStatus %></span></p>
+        </div>
+
+        <div class="payment-form">
+            <h2>Enter Payment Information</h2>
+            <form action="/customer/bookings/payment/success" method="POST">
+                <input type="hidden" name="bookingId" value="<%= booking._id %>">
+
+                <label for="transactionId">Transaction ID:</label>
+                <input type="text" id="transactionId" name="transactionId" placeholder="Enter transaction ID" required>
+
+                <label for="paymentMethod">Payment Method:</label>
+                <select id="paymentMethod" name="paymentMethod" required>
+                    <option value="">Select Payment Method</option>
+                    <option value="credit card">Credit Card</option>
+                    <option value="debit card">Debit Card</option>
+                    <option value="upi">UPI</option>
+                    <option value="net banking">Net Banking</option>
+                    <option value="cash_on_delivery">Cash on Delivery</option>
+                    <option value="bank transfer">Bank Transfer</option>
+                </select>
+
+                <button type="submit">Confirm Payment</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

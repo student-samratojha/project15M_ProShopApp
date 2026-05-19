@@ -2,6 +2,7 @@ const productModel = require("../db/models/product.model");
 const categoryModel = require("../db/models/category.model");
 const auditHelper = require("../helper/audit.helper");
 const userModel = require("../db/models/user.model");
+const { sendNotification } = require("../helper/notification.helper");
 async function getMakeProduct(req, res) {
   try {
     const category = await categoryModel.find({ employee: req.user._id });
@@ -14,7 +15,7 @@ async function getMakeProduct(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/employee?make_product=false");
+      return res.redirect("/employee/dashboard?make_product=false");
     }
     res.render("employee/makeProduct", {
       user: req.user,
@@ -22,7 +23,7 @@ async function getMakeProduct(req, res) {
     });
   } catch (error) {
     console.error("Get Make Product Error:", error.message);
-    res.redirect("/secure/employee?make_product=false");
+    res.redirect("/employee/dashboard?make_product=false");
   }
 }
 
@@ -74,7 +75,7 @@ async function createProduct(req, res) {
         "warning",
       );
       return res.redirect(
-        "/secure/employee?make_product=false&error=Product with the same name already exists in this category",
+        "/employee/dashboard?make_product=false&error=Product with the same name already exists in this category",
       );
     }
     const generatedSlug = slug
@@ -132,7 +133,7 @@ async function createProduct(req, res) {
       true,
       "info",
     );
-    return res.redirect("/secure/employee?make_product=true");
+    return res.redirect("/employee/dashboard?make_product=true");
   } catch (error) {
     console.error("Create Product Error:", error.message);
     await auditHelper.auditLog(
@@ -144,7 +145,7 @@ async function createProduct(req, res) {
       "critical",
     );
     return res.redirect(
-      "/secure/employee?make_product=false&error=Unable to create product",
+      "/employee/dashboard?make_product=false&error=Unable to create product",
     );
   }
 }
@@ -162,7 +163,7 @@ async function deleteProduct(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/employee?delete_product=false");
+      return res.redirect("/employee/dashboard?delete_product=false");
     }
     await productModel.findByIdAndUpdate(id, {
       isDeleted: true,
@@ -175,7 +176,7 @@ async function deleteProduct(req, res) {
       true,
       "info",
     );
-    return res.redirect("/secure/employee?delete_product=true");
+    return res.redirect("/employee/dashboard?delete_product=true");
   } catch (error) {
     console.log("Delete Product Error:", error.message);
     await auditHelper.auditLog(
@@ -186,7 +187,7 @@ async function deleteProduct(req, res) {
       false,
       "critical",
     );
-    return res.redirect("/secure/employee?delete_product=false");
+    return res.redirect("/employee/dashboard?delete_product=false");
   }
 }
 
@@ -203,7 +204,7 @@ async function editProduct(req, res) {
         false,
         "warning",
       );
-      return res.redirect("/secure/employee?edit_product=false");
+      return res.redirect("/employee/dashboard?edit_product=false");
     }
     const category = await categoryModel.findOne({ employee: req.user._id });
     if (product.category.toString() !== category._id.toString()) {
@@ -216,7 +217,7 @@ async function editProduct(req, res) {
         "warning",
       );
       return res.redirect(
-        "/secure/employee?edit_product=false&error=Unauthorized access",
+        "/employee/dashboard?edit_product=false&error=Unauthorized access",
       );
     }
     res.render("employee/editProduct", {
@@ -235,7 +236,7 @@ async function editProduct(req, res) {
       "critical",
     );
     return res.redirect(
-      "/secure/employee?edit_product=false&error=Unable to edit product",
+      "/employee/dashboard?edit_product=false&error=Unable to edit product",
     );
   }
 }
@@ -285,7 +286,7 @@ async function updateProduct(req, res) {
       );
 
       return res.redirect(
-        "/secure/employee?update_product=false&error=Product not found",
+        "/employee/dashboard?update_product=false&error=Product not found",
       );
     }
 
@@ -303,7 +304,7 @@ async function updateProduct(req, res) {
       );
 
       return res.redirect(
-        "/secure/employee?update_product=false&error=Required fields missing",
+        "/employee/dashboard?update_product=false&error=Required fields missing",
       );
     }
 
@@ -327,7 +328,7 @@ async function updateProduct(req, res) {
         );
 
         return res.redirect(
-          "/secure/employee?update_product=false&error=SKU already exists",
+          "/employee/dashboard?update_product=false&error=SKU already exists",
         );
       }
     }
@@ -414,7 +415,7 @@ async function updateProduct(req, res) {
     // RESPONSE
     // =========================
     return res.redirect(
-      "/secure/employee?update_product=true&success=Product updated successfully",
+      "/employee/dashboard?update_product=true&success=Product updated successfully",
     );
   } catch (error) {
     console.log("Update Product Error:", error.message);
@@ -429,7 +430,7 @@ async function updateProduct(req, res) {
     );
 
     return res.redirect(
-      "/secure/employee?update_product=false&error=Unable to update product",
+      "/employee/dashboard?update_product=false&error=Unable to update product",
     );
   }
 }
@@ -527,7 +528,7 @@ async function employeeProductManage(req, res) {
     res.render("employee/employeeProducts", { products, employee });
   } catch (error) {
     console.error("Error fetching employee products:", error);
-    res.redirect("/secure/employee?error=Unable to fetch products");
+    res.redirect("/employee/dashboard?error=Unable to fetch products");
   }
 }
 async function addToWishlist(req, res) {
@@ -557,6 +558,12 @@ async function addToWishlist(req, res) {
         true,
         "info",
       );
+      await sendNotification(
+        req.user._id,
+        `Product "${product.name}" has been added to your wishlist.`,
+        "wishlist",
+        `/products/${productId}`,
+      );
       return res.redirect("/products/all?add_to_wishlist=false");
     }
     user.wishlist.push(productId);
@@ -572,7 +579,7 @@ async function addToWishlist(req, res) {
     return res.redirect("/products/all?add_to_wishlist=true");
   } catch (error) {
     console.error("Add to Wishlist Error:", error.message);
-    res.redirect("/product/all?add_to_wishlist=false");
+    res.redirect("/products/all?add_to_wishlist=false");
   }
 }
 async function productDetails(req, res) {
